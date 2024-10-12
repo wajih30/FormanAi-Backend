@@ -1,7 +1,8 @@
 import logging
 from models.student_data_handler import StudentDataHandler
 from utils.prompt_builder import build_degree_audit_prompt
-from transcript_vision_service import TranscriptVisionService
+from services.transcript_vision_service import TranscriptVisionService
+from config import MAJOR_NAME_MAPPING
 import openai
 import os
 
@@ -23,17 +24,22 @@ class DegreeAuditService:
         """Initialize the service for the given major."""
         logger.info(f"Initializing DegreeAuditService for major: {major_name}")
         self.major_name = major_name
+        self.major_id = self._get_major_id()
+
+        if not self.major_id:
+            logger.error(f"Invalid major name: {major_name}")
+            raise ValueError(f"Invalid major name: {major_name}")
 
     def perform_audit(self, transcript_file=None, manual_course_data=None):
         """
         Perform a degree audit based on the student's transcript or manually provided data.
 
         Args:
-        - transcript_file (file): The uploaded transcript file (PDF or image) for analysis.
-        - manual_course_data (dict): Dictionary containing manually entered course information.
+            transcript_file (file, optional): The uploaded transcript file (PDF or image).
+            manual_course_data (dict, optional): Dictionary containing manually entered course information.
 
         Returns:
-        - str: Detailed degree audit analysis.
+            str: Detailed degree audit analysis or error message.
         """
         logger.info("Starting degree audit process.")
         try:
@@ -42,10 +48,10 @@ class DegreeAuditService:
                 if not transcript_data:
                     return "Failed to extract transcript data. Please try again."
             else:
-                transcript_data = manual_course_data if manual_course_data else {}
+                transcript_data = manual_course_data or {}
 
             # Initialize StudentDataHandler for audit
-            student_handler = StudentDataHandler(transcript_data, self._get_major_id(), self.major_name)
+            student_handler = StudentDataHandler(transcript_data, self.major_id, self.major_name)
 
             # Retrieve remaining courses and general education status
             remaining_courses = student_handler.get_remaining_courses()
@@ -53,10 +59,13 @@ class DegreeAuditService:
 
             # Build the degree audit prompt
             logger.info("Building degree audit prompt.")
-            prompt = build_degree_audit_prompt(transcript_data, remaining_courses, general_ed_status, self.major_name)
+            prompt = build_degree_audit_prompt(
+                transcript_data, remaining_courses, general_ed_status, self.major_name
+            )
 
-            # Generate OpenAI response
+            # Generate and return OpenAI response
             return self._generate_openai_response(prompt)
+
         except Exception as e:
             logger.error(f"Error during degree audit: {e}")
             return f"An error occurred: {str(e)}"
@@ -78,11 +87,16 @@ class DegreeAuditService:
             response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "You are an academic advisor bot specialized in degree audit analysis."},
-                    {"role": "user", "content": prompt}
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are an academic advisor bot specialized in degree audit analysis."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
                 ],
                 temperature=0.5,
-                max_tokens=1500
+                max_tokens=1500,
             )
             return response.choices[0].message['content'].strip()
         except Exception as e:
@@ -91,5 +105,13 @@ class DegreeAuditService:
 
     def _get_major_id(self):
         """Retrieve the major ID based on the major name."""
-        from config import MAJOR_NAME_MAPPING
-        return MAJOR_NAME_MAPPING.get(self.major_name, None)
+        major_data = MAJOR_NAME_MAPPING.get(self.major_name)
+
+        # Handle sub-major cases like 'Applied Psychology' or 'Sociology and Cult'
+        if isinstance(major_data, dict):
+            if self.major_name in major_data.get("sub_categories", {}):
+                return major_data["id"]
+            logger.error(f"Invalid sub-major: {self.major_name}")
+            raise ValueError(f"Invalid sub-major: {self.major_name}")
+
+        return major_data or None

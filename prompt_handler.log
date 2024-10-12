@@ -1,0 +1,155 @@
+2024-10-12 17:47:41,704 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 17:47:41,704 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 17:51:16,711 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 17:51:16,711 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 17:52:56,577 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 17:52:56,577 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 17:53:38,486 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 17:53:38,486 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 17:55:51,384 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 17:55:51,384 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 17:58:21,571 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 17:58:21,571 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:03:36,180 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:03:36,180 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:11:23,362 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:11:23,362 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:12:03,396 - utils.prompt_builder - INFO - Building manual query prompt for intent: What requirements does COMP113 belong to?
+2024-10-12 18:13:52,006 - utils.prompt_builder - INFO - Building manual query prompt for intent: What requirements does COMP113 belong to?
+2024-10-12 18:14:59,953 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:14:59,953 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:15:48,900 - utils.prompt_builder - INFO - Building manual query prompt for intent: What requirements does COMP113 belong to?
+2024-10-12 18:25:20,888 - utils.prompt_builder - INFO - Building manual query prompt for intent: What requirements does COMP113 belong to?
+2024-10-12 18:25:27,695 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:25:27,695 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:28:29,624 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:28:29,624 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:28:32,932 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:28:32,932 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:28:42,513 - utils.prompt_builder - INFO - Building manual query prompt for intent: What requirements does COMP113 belong to?
+2024-10-12 18:30:42,750 - utils.prompt_builder - INFO - Building manual query prompt for intent: What requirements does COMP113 belong to?
+2024-10-12 18:31:06,887 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:31:06,887 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:35:52,034 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:35:52,034 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:40:30,061 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:40:30,061 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:40:40,685 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:40:40,685 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:42:16,613 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:42:16,614 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:43:10,719 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:43:10,719 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:44:08,584 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:44:08,584 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:45:30,270 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:45:30,270 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:45:53,626 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:45:53,626 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:47:13,548 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:47:13,548 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:48:25,035 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:48:25,035 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:54:08,797 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for BIOLOGY?
+2024-10-12 18:54:08,797 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:55:08,661 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for ECONOMICS?
+2024-10-12 18:55:08,661 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 18:55:29,992 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 18:55:29,992 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:02:28,476 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:02:28,476 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:03:31,993 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:03:31,993 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:15:26,291 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:15:26,291 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:16:35,495 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:16:35,495 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:19:57,258 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:19:57,258 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:21:13,136 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:21:13,136 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:22:35,642 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:22:35,642 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:27:07,088 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:27:07,088 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:27:42,228 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:27:42,228 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:28:00,407 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:28:00,407 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:29:41,384 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:29:41,384 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:34:56,074 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:34:56,074 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:36:13,145 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:36:13,145 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:42:58,540 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:42:58,541 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:49:14,195 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:49:14,195 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:50:32,478 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:50:32,478 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:51:56,273 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:51:56,273 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:52:50,627 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:52:50,627 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:54:34,515 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:54:34,515 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:55:44,400 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:55:44,400 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:57:03,375 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:57:03,375 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 19:59:15,248 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 19:59:15,248 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:01:40,480 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:01:40,480 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:03:16,429 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:03:16,429 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:05:16,395 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:05:16,395 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:11:43,930 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:11:43,930 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:11:46,134 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:11:46,134 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:13:32,391 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:13:32,391 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:14:31,673 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:14:31,673 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:15:07,791 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:15:07,791 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:15:31,667 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:15:31,667 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:16:02,035 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:16:02,035 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:16:33,826 - utils.prompt_builder - INFO - Building manual query prompt for intent: What core courses do I need for Computer Science?
+2024-10-12 20:16:33,827 - utils.prompt_builder - INFO - Building course prompt for core courses.
+2024-10-12 20:17:06,338 - utils.prompt_builder - INFO - Building manual query prompt for intent: What electives courses do I need for Computer Science?
+2024-10-12 20:17:06,338 - utils.prompt_builder - INFO - Building course prompt for elective courses.
+2024-10-12 20:18:00,880 - utils.prompt_builder - INFO - Building manual query prompt for intent: How many electivec courses required in Computer Science?
+2024-10-12 20:18:00,880 - utils.prompt_builder - INFO - Building course prompt for elective courses.
+2024-10-12 21:13:19,057 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:17:07,110 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:19:38,946 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:27:54,170 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:28:13,178 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:31:28,255 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:37:08,842 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:39:36,521 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:43:37,158 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:45:55,360 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:47:15,642 - utils.prompt_builder - ERROR - Major ID 1 not found in MAJOR_NAME_MAPPING.
+2024-10-12 21:47:15,642 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:49:28,728 - utils.prompt_builder - ERROR - Major ID 1 not found in MAJOR_NAME_MAPPING.
+2024-10-12 21:49:28,728 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:51:18,601 - utils.prompt_builder - ERROR - Major ID 1 not found in MAJOR_NAME_MAPPING.
+2024-10-12 21:51:18,601 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Computer Science?
+2024-10-12 21:51:43,349 - utils.prompt_builder - ERROR - Major ID 15 not found in MAJOR_NAME_MAPPING.
+2024-10-12 21:51:43,350 - utils.prompt_builder - INFO - Building manual query prompt for query: How many electivec courses required in Physics?
+2024-10-12 21:53:38,561 - utils.prompt_builder - ERROR - Major ID 15 not found in MAJOR_NAME_MAPPING.
+2024-10-12 22:01:25,499 - utils.prompt_builder - ERROR - Major ID 8 not found in MAJOR_NAME_MAPPING.
+2024-10-12 22:01:42,309 - utils.prompt_builder - ERROR - Major ID None not found in MAJOR_NAME_MAPPING.
+2024-10-12 22:02:18,894 - utils.prompt_builder - ERROR - Major ID None not found in MAJOR_NAME_MAPPING.
+2024-10-12 22:09:37,595 - utils.prompt_builder - ERROR - Major name ' applied psychology' not found in MAJOR_NAME_MAPPING.
+2024-10-12 22:20:03,135 - utils.prompt_builder - ERROR - Major name ' applied psychology' not found in MAJOR_NAME_MAPPING.
+2024-10-13 00:20:32,613 - utils.prompt_builder - ERROR - Major name ' applied psychology' not found in MAJOR_NAME_MAPPING.
+2024-10-13 00:24:15,995 - utils.prompt_builder - ERROR - Major name ' applied psychology' not found in MAJOR_NAME_MAPPING.
+2024-10-13 00:24:24,483 - utils.prompt_builder - ERROR - Major name ' applied psychology' not found in MAJOR_NAME_MAPPING.
