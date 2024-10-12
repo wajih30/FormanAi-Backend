@@ -1,19 +1,23 @@
 from flask import Flask, request, jsonify, send_from_directory
-import openai
 import os
-from db import db
+import logging
 from dotenv import load_dotenv
+
+from db import db
 from models.course_handler import CourseHandler
-from models.student_data_handler import StudentDataHandler
-from models.general_education_handler import GeneralEducationHandler
 from utils.prompt_builder import PromptHandler
-from utils.normalization import get_major_id_from_name
+from services.openai_services import generate_chatgpt_response  # Updated import
 
 # Load environment variables
 load_dotenv()
 
-# Set OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('app.log')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -22,10 +26,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database with the app
 db.init_app(app)
-
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 def home():
@@ -37,7 +37,30 @@ def test_db():
         result = db.session.execute("SELECT 1").fetchone()
         return "Database connection successful!" if result else "Failed to connect to the database."
     except Exception as e:
-        return f"Error: {e}"
+        logger.error(f"Database connection error: {str(e)}")
+        return f"Error: {e}", 500
+
+@app.route('/manual_query', methods=['POST'])
+def manual_query():
+    try:
+        query_data = request.json.get("query_data")
+        major_name = request.json.get("major_name")
+
+        if not query_data or not major_name:
+            return jsonify({"error": "Missing query data or major name"}), 400
+
+        # Use PromptHandler to build the prompt
+        prompt_handler = PromptHandler(major_name=major_name)
+        prompt = prompt_handler.build_manual_query_prompt(query_data)
+
+        # Use OpenAI to generate a response
+        reply = generate_chatgpt_response(prompt)
+
+        return jsonify({"status": "success", "manual_query_response": reply})
+
+    except Exception as e:
+        logger.error(f"Error in manual_query: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/upload_transcript', methods=['POST'])
 def upload_transcript():
@@ -48,20 +71,13 @@ def upload_transcript():
         if not transcript_data or not major_name:
             return jsonify({"error": "Missing required fields"}), 400
 
-        major_id = get_major_id_from_name(major_name)
-        if major_id is None:
-            return jsonify({"error": "Invalid major name"}), 400
+        prompt_handler = PromptHandler(major_name=major_name)
+        completed_courses = prompt_handler.course_handler.get_courses("completed")
 
-        student_data_handler = StudentDataHandler(transcript_data, major_id, major_name)
-        completed_courses = student_data_handler.completed_courses
-        gpa = student_data_handler.gpa
+        return jsonify({"status": "success", "completed_courses": completed_courses})
 
-        return jsonify({
-            "status": "success",
-            "completed_courses": completed_courses,
-            "gpa": gpa
-        })
     except Exception as e:
+        logger.error(f"Error in upload_transcript: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/degree_audit', methods=['POST'])
@@ -73,111 +89,39 @@ def degree_audit():
         if not major_name or not completed_courses:
             return jsonify({"error": "Missing required fields"}), 400
 
-        major_id = get_major_id_from_name(major_name)
-        if major_id is None:
-            return jsonify({"error": "Invalid major name"}), 400
+        prompt_handler = PromptHandler(major_name=major_name)
+        core_courses = prompt_handler.course_handler.get_courses("core")
+        missing_core = [c for c in core_courses if c not in completed_courses]
 
-        course_handler = CourseHandler(major_id)
-        gen_ed_handler = GeneralEducationHandler(major_id)
+        return jsonify({"status": "success", "missing_core_courses": missing_core})
 
-        missing_core = course_handler.get_missing_core_courses(completed_courses)
-        missing_electives = course_handler.get_missing_elective_courses(completed_courses)
-        gen_ed_status = gen_ed_handler.get_remaining_requirements(completed_courses)
-
-        transcript_data = {"Semester 1": completed_courses}
-        course_tables = {
-            "core": missing_core,
-            "elective": missing_electives,
-            "general education": gen_ed_status
-        }
-
-        prompt_handler = PromptHandler(major_id=major_id)
-        audit_prompt = prompt_handler.build_degree_audit_prompt(transcript_data, course_tables)
-
-        return jsonify({
-            "status": "success",
-            "missing_core_courses": missing_core,
-            "missing_electives": missing_electives,
-            "general_education_status": gen_ed_status,
-            "degree_audit_prompt": audit_prompt
-        })
     except Exception as e:
+        logger.error(f"Error in degree_audit: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/advising', methods=['POST'])
 def advising():
     try:
         major_name = request.json.get("major_name")
-        transcript_data = request.json.get("transcript_data")
-        remaining_courses = request.json.get("remaining_courses")
-        gen_ed_status = request.json.get("gen_ed_status")
         gpa = request.json.get("gpa")
         cgpa = request.json.get("cgpa")
 
-        if not transcript_data or not remaining_courses or not gen_ed_status:
-            return jsonify({"error": "Missing required fields"}), 400
+        if not major_name:
+            return jsonify({"error": "Missing major name"}), 400
 
-        major_id = get_major_id_from_name(major_name)
-        if major_id is None:
-            return jsonify({"error": "Invalid major name"}), 400
+        # Prepare advising prompt
+        advising_prompt = f"Advise on next steps for a student in {major_name} with GPA {gpa} and CGPA {cgpa}."
 
-        prompt_handler = PromptHandler(major_id=major_id)
-        advising_prompt = prompt_handler.build_transcript_analysis_prompt(
-            transcript_data=transcript_data,
-            remaining_courses=remaining_courses,
-            gen_ed_status=gen_ed_status,
-            gpa=gpa,
-            cgpa=cgpa
-        )
+        # Use OpenAI to generate a response
+        response = generate_chatgpt_response(advising_prompt)
 
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=advising_prompt,
-            max_tokens=150
-        )
+        return jsonify({"status": "success", "advising_response": response})
 
-        return jsonify({
-            "status": "success",
-            "advising_response": response.choices[0].text.strip()
-        })
-    except openai.error.OpenAIError as e:
-        return jsonify({"error": f"OpenAI API Error: {str(e)}"}), 500
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/manual_query', methods=['POST'])
-def manual_query():
-    try:
-        query_data = request.json.get("query_data")
-        major_name = request.json.get("major_name")
-        course_code = request.json.get("course_code")
-
-        if not query_data or not major_name:
-            return jsonify({"error": "Missing required fields"}), 400
-
-        major_id = get_major_id_from_name(major_name)
-        if major_id is None:
-            return jsonify({"error": "Invalid major name"}), 400
-
-        prompt_handler = PromptHandler(major_id=major_id)
-        prompt = prompt_handler.build_manual_query_prompt(query_data, course_code)
-
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            max_tokens=200
-        )
-
-        return jsonify({
-            "status": "success",
-            "manual_query_response": response.choices[0].text.strip()
-        })
-    except openai.error.OpenAIError as e:
-        return jsonify({"error": f"OpenAI API Error: {str(e)}"}), 500
-    except Exception as e:
+        logger.error(f"Error in advising: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Ensure tables are created before the app runs
-    app.run(debug=True)
+        db.create_all()  # Create tables if they don't exist
+    app.run(debug=True)  # Run the Flask app in debug mode

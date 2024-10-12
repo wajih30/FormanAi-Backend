@@ -1,14 +1,11 @@
 import logging
 import sys
-print(sys.path)  # This will print the directories Python is searching for modules
-
-
-
-from utils.prompt_builder import PromptHandler  # Import the class
-
-import logging
-import openai
 import os
+import openai
+from utils.prompt_builder import PromptHandler  # Import the PromptHandler class
+
+# Print the system path for debugging imports
+print(sys.path)  # This will print directories Python searches for modules
 
 # Set OpenAI API Key
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -28,24 +25,24 @@ class ChatService:
         """Initialize the service for the given major."""
         logger.info(f"Initializing ChatService for major: {major_name}")
         self.major_name = major_name
-        self.prompt_handler = PromptHandler()  # Instantiate PromptHandler
+        self.prompt_handler = PromptHandler()  # Instantiate the PromptHandler
 
     def handle_query(self, parsed_data):
         """
         Handle the user query and build a prompt for OpenAI based on the parsed data.
 
         Args:
-        - parsed_data (dict): The user's query in structured form.
+            parsed_data (dict): The user's query in structured form.
 
         Returns:
-        - str: OpenAI's response to the user query.
+            str: OpenAI's response to the user query.
         """
         logger.info(f"Handling user query: {parsed_data}")
         try:
-            # Call the build_manual_query_prompt method from the PromptHandler instance
+            # Build the prompt using the prompt handler
             prompt = self.prompt_handler.build_manual_query_prompt(parsed_data)
 
-            # Send the prompt to OpenAI and get the response
+            # Generate a response using OpenAI's API
             return self._generate_openai_response(prompt)
         except Exception as e:
             logger.error(f"Error handling query: {e}")
@@ -70,6 +67,7 @@ class ChatService:
             return f"An error occurred while generating a response: {str(e)}"
 
 def test_chat_service():
+    """Test function to validate the chat service."""
     print("Chat Service is working!")
 
 # Add this block to test the file independently

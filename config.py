@@ -751,10 +751,22 @@ MAJOR_NAME_MAPPING = {
     "Philosophy": 14,
     "Physics": 15,
     "Political Science": 16,
-    "Psychology": 17,
-    "Islamiat":18,
+    "Psychology": {
+        "id": 17,
+        "sub_categories": {
+            "Normal": {},
+            "Applied": {}
+        }
+    },
+    "Islamiat"
     "Isl": 18,
-    "Sociology": 19,
+    "Sociology": {
+        "id": 19,
+        "sub_categories": {
+            "Sociology": {},
+            "Sociology and Cult": {}
+        }
+    },
     "Statistics": 20,
     "Urdu": 21,
     "Pharmacy": 22,
