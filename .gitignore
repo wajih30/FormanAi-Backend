@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -561,3 +562,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 >>>>>>> a65f527 (Initial commit)
+=======
+>>>>>>> c668b21 (Initial commit)
