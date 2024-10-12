@@ -1,0 +1,233 @@
+2024-10-12 06:45:42,831 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 06:47:36,707 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 06:47:51,805 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 06:49:24,996 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 06:51:25,634 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 14:51:04,340 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 14:56:10,298 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 14:56:12,653 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 14:58:04,255 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:00:48,762 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:02:36,232 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:02:52,656 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:02:54,428 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:10:12,872 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:10:12,880 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:10:12,880 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:10:12,880 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:10:12,881 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:10:12,881 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:10:12,881 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:10:12,881 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:10:12,881 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:10:12,881 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:10:12,881 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:10:12,881 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:10:12,881 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:10:12,881 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:10:12,881 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:10:12,881 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:10:12,882 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:10:12,882 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:10:12,882 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:10:12,882 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:15:59,355 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:15:59,365 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:15:59,367 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:22:35,700 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:22:35,716 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:22:35,716 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:22:35,717 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:35,717 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:22:35,717 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:35,717 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:22:35,717 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:35,717 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:35,718 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:35,718 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:22:35,718 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:22:41,665 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:22:41,681 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:22:41,681 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:22:41,681 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:41,681 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:22:41,681 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:41,681 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:22:41,681 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:41,682 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:41,682 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:22:41,682 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:22:41,682 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:24:23,375 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:24:23,379 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:30:43,468 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:30:43,482 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:30:44,745 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:30:44,747 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:30:44,747 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:30:44,747 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:44,747 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:44,748 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:44,748 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:44,748 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:30:44,748 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:30:44,748 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:30:44,749 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:33:54,619 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:33:54,622 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:33:54,622 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:33:54,622 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:33:54,622 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:33:54,622 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:33:54,622 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:33:54,622 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:33:54,622 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:33:54,633 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:33:54,633 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:33:54,633 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:36:21,766 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:36:21,781 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:39:09,622 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:39:09,631 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:39:09,631 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:39:09,632 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:09,632 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:39:09,632 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:09,632 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:39:09,632 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:09,632 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:09,633 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:09,633 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:39:09,633 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:39:12,047 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
+2024-10-12 15:39:12,049 - models.general_education_handler - INFO - Fetching all general education courses for major ID: 1
+2024-10-12 15:39:12,049 - models.general_education_handler - INFO - Fetching compulsory courses for major ID: 1
+2024-10-12 15:39:12,049 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:12,050 - models.general_education_handler - INFO - Fetching religious courses for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:12,050 - models.general_education_handler - INFO - Fetching humanities courses for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:12,050 - models.general_education_handler - INFO - Fetching social science courses for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:12,050 - models.general_education_handler - INFO - Fetching science lab courses for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - ERROR - Error fetching courses from bio_general_education for course_code: Not an executable object: 'SELECT course_code, course_name, credits FROM bio_general_education WHERE course_code IN :values'
+2024-10-12 15:39:12,050 - models.general_education_handler - INFO - Fetching math courses for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - INFO - Fetching computer science courses for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - INFO - Fetching additional general education courses for major ID: 1
+2024-10-12 15:39:12,050 - models.general_education_handler - WARNING - No values provided or general table not found for major ID: 1
+2024-10-12 15:39:12,051 - models.general_education_handler - INFO - Generated remaining general education requirements for major ID: 1
+2024-10-12 15:39:12,051 - models.general_education_handler - INFO - Initialized GeneralEducationHandler for major ID: 1
