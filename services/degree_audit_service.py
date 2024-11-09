@@ -1,10 +1,10 @@
 import logging
-from models.student_data_handler import StudentDataHandler
-from utils.prompt_builder import build_degree_audit_prompt
-from services.transcript_vision_service import TranscriptVisionService
-from config import MAJOR_NAME_MAPPING
 import openai
 import os
+from models.student_data_handler import StudentDataHandler
+from utils.prompt_builder import PromptHandler  # Use PromptHandler to build degree audit prompts
+from services.transcript_vision_service import TranscriptVisionService
+from config import MAJOR_NAME_MAPPING
 
 # Set OpenAI API Key
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -13,22 +13,26 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 handler = logging.FileHandler('degree_audit_service.log')
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levellevel)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 class DegreeAuditService:
     """Handles the degree audit functionality for a student's academic progress."""
 
-    def __init__(self, major_name):
-        """Initialize the service for the given major."""
+    def __init__(self, major_name, sub_major=None):
+        """Initialize the service for the given major and optional sub-major."""
         logger.info(f"Initializing DegreeAuditService for major: {major_name}")
         self.major_name = major_name
+        self.sub_major = sub_major
         self.major_id = self._get_major_id()
 
         if not self.major_id:
             logger.error(f"Invalid major name: {major_name}")
             raise ValueError(f"Invalid major name: {major_name}")
+
+        # Initialize PromptHandler to build prompts
+        self.prompt_handler = PromptHandler(major_name, sub_major)
 
     def perform_audit(self, transcript_file=None, manual_course_data=None):
         """
@@ -57,10 +61,10 @@ class DegreeAuditService:
             remaining_courses = student_handler.get_remaining_courses()
             general_ed_status = student_handler.get_remaining_general_education_courses()
 
-            # Build the degree audit prompt
+            # Build the degree audit prompt using the PromptHandler
             logger.info("Building degree audit prompt.")
-            prompt = build_degree_audit_prompt(
-                transcript_data, remaining_courses, general_ed_status, self.major_name
+            prompt = self.prompt_handler.build_degree_audit_prompt(
+                transcript_data, remaining_courses, general_ed_status
             )
 
             # Generate and return OpenAI response
@@ -84,8 +88,8 @@ class DegreeAuditService:
         """Generate a response using OpenAI for the given prompt."""
         try:
             logger.info("Generating OpenAI response for degree audit.")
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
+            response = openai.chat.completions.create(
+                model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "system",
@@ -96,9 +100,9 @@ class DegreeAuditService:
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.5,
-                max_tokens=1500,
+                max_tokens=300,
             )
-            return response.choices[0].message['content'].strip()
+            return response.choices[0].message.content.strip()
         except Exception as e:
             logger.error(f"Error generating OpenAI response: {e}")
             return f"An error occurred while generating a response: {str(e)}"

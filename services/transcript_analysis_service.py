@@ -1,12 +1,11 @@
 import logging
 import openai
 import os
-from transcript_vision_service import TranscriptVisionService
+from services.transcript_vision_service import TranscriptVisionService
 from models.course_handler import CourseHandler
 from models.student_data_handler import StudentDataHandler
 from utils.prompt_builder import PromptHandler  # Import the centralized PromptHandler
-from utils.normalization import get_major_id_from_name  # Use helper for major name to ID
-from config import MAJOR_NAME_MAPPING
+from config import MAJOR_NAME_MAPPING  # Use the MAJOR_NAME_MAPPING
 
 # Set OpenAI API Key
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -25,18 +24,24 @@ class TranscriptAnalysisService:
     def __init__(self, major_name, sub_major=None):
         """Initialize the service for a given major and optional sub-major."""
         logger.info(f"Initializing TranscriptAnalysisService for major: {major_name}, sub-major: {sub_major}")
-        
+
         self.major_name = major_name
         self.sub_major = sub_major
-        self.major_id = get_major_id_from_name(major_name)  # Map major name to ID
+
+        # Create an instance of CourseHandler to get the major ID
+        self.course_handler = CourseHandler(major_name=self.major_name)
+        self.major_id = self.course_handler.major_id  # Access the major ID from the CourseHandler
 
         if not self.major_id:
             logger.error(f"Invalid major name: {major_name}")
             raise ValueError(f"Invalid major name: {major_name}")
 
         self.transcript_service = TranscriptVisionService()
-        self.course_handler = CourseHandler(self.major_id, sub_major)
-        self.prompt_handler = PromptHandler(major_name, sub_major)  # Pass major name and sub-major
+
+        # Initialize StudentDataHandler with required arguments
+        self.student_data_handler = StudentDataHandler(transcript_data={}, major_id=self.major_id, major_name=self.major_name)
+        self.student_data_handler.completed_courses = []  # Ensure this attribute exists
+        self.prompt_handler = PromptHandler(self.student_data_handler)  # Pass student data handler
 
     def analyze_transcript(self, transcript_file):
         """Analyze the provided transcript and recommend courses."""
@@ -52,15 +57,15 @@ class TranscriptAnalysisService:
 
         try:
             # Step 2: Process the transcript data through the StudentDataHandler
-            student_handler = StudentDataHandler(transcript_data, self.major_id, self.major_name)
-            completed_courses = student_handler.completed_courses
-            gpa = student_handler.gpa
+            self.student_data_handler.transcript_data = transcript_data  # Set the transcript data
+            completed_courses = self.student_data_handler.completed_courses
+            gpa = self.student_data_handler.gpa
 
             logger.info(f"Completed courses: {completed_courses}, GPA: {gpa}")
 
             # Step 3: Get remaining courses (core, elective, general education)
-            remaining_courses = student_handler.get_remaining_courses()
-            gen_ed_status = student_handler.get_remaining_general_education_courses()
+            remaining_courses = self.student_data_handler.get_remaining_courses()
+            gen_ed_status = self.student_data_handler.get_remaining_general_education_courses()
 
             logger.info(f"Remaining courses: {remaining_courses}")
             logger.info(f"General education status: {gen_ed_status}")
@@ -81,20 +86,23 @@ class TranscriptAnalysisService:
             logger.error(f"Error during transcript analysis: {e}")
             return {"error": f"An error occurred: {str(e)}"}
 
+    # ... (rest of the class remains the same)
+
+
     def _generate_openai_response(self, prompt):
         """Generate a response using OpenAI for the given prompt."""
         try:
             logger.info("Generating OpenAI response for transcript analysis.")
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
+            response = openai.chat.completions.create(
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are an academic advisor bot specialized in degree analysis and course recommendations."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.5,
-                max_tokens=1500
+                max_tokens=300
             )
-            return response.choices[0].message['content'].strip()
+            return response.choices[0].message.content.strip()
         except Exception as e:
             logger.error(f"Error generating OpenAI response: {e}")
             return {"error": f"An error occurred while generating a response: {str(e)}"}
