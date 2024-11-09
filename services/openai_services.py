@@ -16,7 +16,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-def generate_chatgpt_response(prompt, model="gpt-4", temperature=0.5, max_tokens=1500):
+def generate_chatgpt_response(prompt, model="gpt-3.5-turbo", temperature=0.5, max_tokens=400):
     """
     Generate a response from OpenAI's GPT-4 given a specific prompt.
 
