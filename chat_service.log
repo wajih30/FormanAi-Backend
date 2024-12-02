@@ -1,3 +1,116 @@
 2024-10-13 01:42:40,829 - services.chat_service - ERROR - Error processing query: module 'openai' has no attribute 'error'
 2024-10-13 01:43:22,834 - services.chat_service - ERROR - Error processing query: module 'openai' has no attribute 'error'
 2024-10-13 02:03:14,365 - services.chat_service - ERROR - Error processing query: string indices must be integers, not 'str'
+2024-12-02 01:16:09,639 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 01:16:09,640 - services.chat_service - ERROR - GPT API response was invalid or empty.
+2024-12-02 01:16:53,711 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 01:16:57,447 - services.chat_service - WARNING - Failed to parse JSON; returning raw content.
+2024-12-02 01:17:24,232 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 01:17:24,232 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 01:56:28,704 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 01:56:28,704 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 01:59:55,549 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 01:59:55,549 - services.chat_service - ERROR - Error during GPT API interaction: generate_chatgpt_response() missing 1 required positional argument: 'prompt'
+Traceback (most recent call last):
+  File "C:\Users\DELL\universityproject\formanai\backend\services\chat_service.py", line 100, in continue_conversation
+    gpt_response = generate_chatgpt_response(
+        conversation_history=self.conversation_history,  # Pass the conversation history
+        max_tokens=3000,
+        temperature=0.7
+    )
+TypeError: generate_chatgpt_response() missing 1 required positional argument: 'prompt'
+2024-12-02 02:01:19,769 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:01:19,769 - services.chat_service - ERROR - GPT API response was invalid or empty.
+2024-12-02 02:05:30,534 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:05:30,535 - services.chat_service - ERROR - GPT API response was invalid or empty.
+2024-12-02 02:05:56,793 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:05:56,794 - services.chat_service - ERROR - Error during GPT API interaction: generate_chatgpt_response() got an unexpected keyword argument 'prompt'
+Traceback (most recent call last):
+  File "C:\Users\DELL\universityproject\formanai\backend\services\chat_service.py", line 100, in continue_conversation
+    gpt_response = generate_chatgpt_response(
+        prompt=self.conversation_history,  # Pass the conversation history
+        max_tokens=3000,
+        temperature=0.7
+    )
+TypeError: generate_chatgpt_response() got an unexpected keyword argument 'prompt'
+2024-12-02 02:07:08,734 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:07:08,735 - services.chat_service - ERROR - Error during GPT API interaction: module 'openai' has no attribute 'error'
+Traceback (most recent call last):
+  File "C:\Users\DELL\universityproject\formanai\backend\services\openai_services.py", line 50, in generate_chatgpt_response
+    response = openai.ChatCompletion.create(
+        model=model,
+    ...<2 lines>...
+        max_tokens=max_tokens
+    )
+  File "C:\Users\DELL\universityproject\formanai\backend\venv\Lib\site-packages\openai\lib\_old_api.py", line 39, in __call__
+    raise APIRemovedInV1(symbol=self._symbol)
+openai.lib._old_api.APIRemovedInV1: 
+
+You tried to access openai.ChatCompletion, but this is no longer supported in openai>=1.0.0 - see the README at https://github.com/openai/openai-python for the API.
+
+You can run `openai migrate` to automatically upgrade your codebase to use the 1.0.0 interface. 
+
+Alternatively, you can pin your installation to the old version, e.g. `pip install openai==0.28`
+
+A detailed migration guide is available here: https://github.com/openai/openai-python/discussions/742
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\DELL\universityproject\formanai\backend\services\chat_service.py", line 100, in continue_conversation
+    gpt_response = generate_chatgpt_response(
+        conversation_history=self.conversation_history,  # Pass the conversation history
+        max_tokens=3000,
+        temperature=0.7
+    )
+  File "C:\Users\DELL\universityproject\formanai\backend\services\openai_services.py", line 62, in generate_chatgpt_response
+    except openai.error.OpenAIError as api_error:
+           ^^^^^^^^^^^^
+AttributeError: module 'openai' has no attribute 'error'
+2024-12-02 02:07:45,148 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:07:48,851 - services.chat_service - WARNING - Failed to parse JSON; returning raw content.
+2024-12-02 02:13:23,052 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:13:23,052 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 02:18:45,248 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:18:45,248 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 02:19:42,176 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:19:46,731 - services.chat_service - WARNING - Failed to parse JSON; returning raw content.
+2024-12-02 02:29:34,487 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:29:34,487 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 02:30:58,008 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:31:03,655 - services.chat_service - WARNING - Failed to parse JSON; returning raw content.
+2024-12-02 02:31:56,909 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:32:14,780 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:32:14,781 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 02:34:02,369 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:36:40,425 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:36:40,425 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 02:38:03,736 - services.chat_service - INFO - Degree audit results added to conversation history.
+2024-12-02 02:39:10,118 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:39:25,012 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 02:39:25,012 - services.chat_service - INFO - Performing degree audit for major: History
+2024-12-02 02:40:46,164 - services.chat_service - INFO - Degree audit results added to conversation history.
+2024-12-02 18:07:39,139 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 18:11:38,705 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 18:12:20,046 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 18:15:34,433 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 18:17:18,998 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 18:22:55,388 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 18:24:53,218 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:08:28,465 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:10:01,700 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:23:15,453 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:27:06,665 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:37:37,711 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:38:59,500 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:46:57,139 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:49:16,410 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 22:59:59,956 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 23:02:27,824 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 23:09:02,431 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 23:10:00,122 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 23:21:15,214 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 23:46:21,158 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 23:47:53,329 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation
+2024-12-02 23:52:04,888 - services.chat_service - INFO - ChatService initialized with conversation_id: default_conversation

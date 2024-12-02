@@ -1,121 +1,133 @@
 import logging
-import openai
-import os
+import json
+from services.openai_services import generate_chatgpt_response
 from models.student_data_handler import StudentDataHandler
-from utils.prompt_builder import PromptHandler  # Use PromptHandler to build degree audit prompts
-from services.transcript_vision_service import TranscriptVisionService
-from config import MAJOR_NAME_MAPPING
+from utils.prompt_builder import PromptHandler
 
-# Set OpenAI API Key
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Set up logging
+# Set up logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.FileHandler('degree_audit_service.log')
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levellevel)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+# File handler
+log_file = 'degree_audit_service.log'
+file_handler = logging.FileHandler(log_file)
+file_handler.setLevel(logging.DEBUG)
+
+# Formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+# Add handlers
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
 
 class DegreeAuditService:
     """Handles the degree audit functionality for a student's academic progress."""
 
-    def __init__(self, major_name, sub_major=None):
-        """Initialize the service for the given major and optional sub-major."""
-        logger.info(f"Initializing DegreeAuditService for major: {major_name}")
-        self.major_name = major_name
-        self.sub_major = sub_major
-        self.major_id = self._get_major_id()
-
-        if not self.major_id:
-            logger.error(f"Invalid major name: {major_name}")
-            raise ValueError(f"Invalid major name: {major_name}")
-
-        # Initialize PromptHandler to build prompts
-        self.prompt_handler = PromptHandler(major_name, sub_major)
-
-    def perform_audit(self, transcript_file=None, manual_course_data=None):
+    def __init__(self, file_paths, major_name):
         """
-        Perform a degree audit based on the student's transcript or manually provided data.
+        Initialize the DegreeAuditService with the student's major and files.
 
         Args:
-            transcript_file (file, optional): The uploaded transcript file (PDF or image).
-            manual_course_data (dict, optional): Dictionary containing manually entered course information.
+            file_paths (list): List of file paths (PDF or images).
+            major_name (str): The student's major.
+        """
+        logger.info(f"Initializing DegreeAuditService for major: {major_name}")
+        self.file_paths = file_paths
+        self.major_name = major_name
+
+    def perform_audit(self):
+        """
+        Perform a degree audit based on the student's transcript files.
 
         Returns:
-            str: Detailed degree audit analysis or error message.
+            dict: The degree audit result or error message.
         """
-        logger.info("Starting degree audit process.")
         try:
-            if transcript_file:
-                transcript_data = self._extract_transcript_data(transcript_file)
-                if not transcript_data:
-                    return "Failed to extract transcript data. Please try again."
-            else:
-                transcript_data = manual_course_data or {}
-
-            # Initialize StudentDataHandler for audit
-            student_handler = StudentDataHandler(transcript_data, self.major_id, self.major_name)
-
-            # Retrieve remaining courses and general education status
-            remaining_courses = student_handler.get_remaining_courses()
-            general_ed_status = student_handler.get_remaining_general_education_courses()
-
-            # Build the degree audit prompt using the PromptHandler
-            logger.info("Building degree audit prompt.")
-            prompt = self.prompt_handler.build_degree_audit_prompt(
-                transcript_data, remaining_courses, general_ed_status
+            # Step 1: Initialize StudentDataHandler
+            logger.info("Initializing StudentDataHandler.")
+            student_data_handler = StudentDataHandler(
+                file_paths=self.file_paths,
+                major_name=self.major_name
             )
+            logger.info("Transcript data successfully processed.")
 
-            # Generate and return OpenAI response
-            return self._generate_openai_response(prompt)
+            # Step 2: Generate degree audit prompt
+            logger.info("Generating degree audit prompt.")
+            prompt_handler = PromptHandler(student_data_handler=student_data_handler)
+            degree_audit_prompt = prompt_handler.build_degree_audit_prompt()
+            logger.debug(f"Generated degree audit prompt: {degree_audit_prompt}")
+
+            # Step 3: Call OpenAI API for the audit response
+            logger.info("Sending degree audit prompt to OpenAI API.")
+            audit_response = generate_chatgpt_response(
+                prompt=degree_audit_prompt,
+                max_tokens=3000,
+                temperature=0.0
+            )
+            logger.debug(f"Raw GPT response: {audit_response}")
+
+            # Step 4: Parse and validate the GPT response
+            if audit_response and hasattr(audit_response, "choices") and audit_response.choices:
+                raw_content = audit_response.choices[0].message.content.strip()
+                logger.debug(f"Raw GPT response content: {raw_content}")
+
+                # Step 5: Extract JSON from response
+                parsed_content = self._extract_json(raw_content)
+                if parsed_content:
+                    logger.info("Degree audit completed successfully.")
+                    return {
+                        "status": "success",
+                        "audit_info": parsed_content,
+                        "raw_response": raw_content
+                    }
+                else:
+                    logger.error("Failed to extract valid JSON from GPT response.")
+                    return {
+                        "status": "error",
+                        "message": "Failed to parse the GPT response into a valid JSON format.",
+                        "raw_response": raw_content
+                    }
+
+            logger.error("Invalid GPT response: No valid choices found.")
+            return {"status": "error", "message": "GPT response is invalid or empty."}
+
+        except ValueError as ve:
+            logger.error(f"Validation error: {ve}")
+            return {"status": "error", "message": str(ve)}
 
         except Exception as e:
-            logger.error(f"Error during degree audit: {e}")
-            return f"An error occurred: {str(e)}"
+            logger.error(f"Unexpected error during degree audit: {e}", exc_info=True)
+            return {"status": "error", "message": "An unexpected error occurred during the degree audit process."}
 
-    def _extract_transcript_data(self, transcript_file):
-        """Extract transcript data using the TranscriptVisionService."""
-        logger.info("Extracting transcript data using TranscriptVisionService.")
+    def _extract_json(self, raw_content):
+        """
+        Extract JSON from GPT response content.
+
+        Args:
+            raw_content (str): The raw response content.
+
+        Returns:
+            dict or None: Extracted JSON data if valid, otherwise None.
+        """
         try:
-            transcript_service = TranscriptVisionService()
-            return transcript_service.extract_transcript_data(transcript_file)
-        except Exception as e:
-            logger.error(f"Failed to extract transcript data: {e}")
+            # Attempt direct JSON parsing
+            return json.loads(raw_content)
+        except json.JSONDecodeError:
+            logger.warning("Direct JSON parsing failed. Attempting to extract JSON fragment.")
+            start_idx = raw_content.find("{")
+            end_idx = raw_content.rfind("}")
+            if start_idx != -1 and end_idx != -1:
+                try:
+                    json_fragment = raw_content[start_idx:end_idx + 1]
+                    logger.debug(f"Extracted JSON fragment: {json_fragment}")
+                    return json.loads(json_fragment)
+                except json.JSONDecodeError as inner_error:
+                    logger.error(f"Failed to parse JSON fragment: {inner_error}")
             return None
-
-    def _generate_openai_response(self, prompt):
-        """Generate a response using OpenAI for the given prompt."""
-        try:
-            logger.info("Generating OpenAI response for degree audit.")
-            response = openai.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are an academic advisor bot specialized in degree audit analysis."
-                        ),
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=0.5,
-                max_tokens=300,
-            )
-            return response.choices[0].message.content.strip()
-        except Exception as e:
-            logger.error(f"Error generating OpenAI response: {e}")
-            return f"An error occurred while generating a response: {str(e)}"
-
-    def _get_major_id(self):
-        """Retrieve the major ID based on the major name."""
-        major_data = MAJOR_NAME_MAPPING.get(self.major_name)
-
-        # Handle sub-major cases like 'Applied Psychology' or 'Sociology and Cult'
-        if isinstance(major_data, dict):
-            if self.major_name in major_data.get("sub_categories", {}):
-                return major_data["id"]
-            logger.error(f"Invalid sub-major: {self.major_name}")
-            raise ValueError(f"Invalid sub-major: {self.major_name}")
-
-        return major_data or None

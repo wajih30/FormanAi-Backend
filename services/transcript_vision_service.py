@@ -1,141 +1,244 @@
-import logging
-from PIL import Image
-from pdf2image import convert_from_bytes
-import openai
 import os
-from utils.normalization import normalize_course_code, normalize_course_name
+import logging
+import base64
+import openai
+from pdf2image import convert_from_path
+from PIL import Image, ImageEnhance
+from io import BytesIO
+import json
 
-# Set OpenAI API Key
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Set up logging
+# Configure logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.FileHandler('transcript_vision_service.log')
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 class TranscriptVisionService:
-    """Service to handle transcript extraction using GPT-4 Vision API for both PDF and image files."""
+    def __init__(self):
+        """
+        Initializes the TranscriptVisionService with OpenAI GPT-4 Vision configuration.
+        """
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        self.poppler_path = os.getenv("POPPLER_PATH")
+        self.output_folder = "processed_images"  # Folder to save processed images
+        if not os.path.exists(self.output_folder):
+            os.makedirs(self.output_folder)  # Ensure the folder exists
+        if not self.poppler_path:
+            logger.error("Poppler path is not set in the environment variables.")
+            raise EnvironmentError("Poppler path is not set. Ensure it is configured correctly in the .env file.")
+        if not openai.api_key:
+            logger.error("OpenAI API key is not set in the environment variables.")
+            raise EnvironmentError("OpenAI API key is missing. Please set it in your environment variables.")
+        self.api_call_in_progress = False
 
-    def extract_transcript_data(self, transcript_file):
-        """Extract transcript data from a given file (PDF or image)."""
+    def validate_file_type(self, file_path):
+        """
+        Validates the file type based on its extension.
+        """
+        valid_extensions = ['.pdf', '.jpg', '.jpeg', '.png']
+        if not any(file_path.lower().endswith(ext) for ext in valid_extensions):
+            logger.error(f"Unsupported file type: {file_path}")
+            raise ValueError(f"Invalid file type. Supported types are: {', '.join(valid_extensions)}")
+        logger.info(f"Validated file type: {file_path}")
+
+    def convert_pdf_to_images(self, file_path, dpi=300):
+        """
+        Converts a PDF file to a list of PIL Image objects with specified DPI.
+        """
         try:
-            if not hasattr(transcript_file, 'name'):
-                logger.error("Uploaded file has no filename attribute.")
-                return {"error": "Invalid file uploaded."}
-
-            file_ext = transcript_file.name.split('.')[-1].lower()
-            logger.info(f"Uploaded file extension: {file_ext}")
-
-            if file_ext == 'pdf':
-                logger.info("Processing transcript PDF file.")
-                images = self._convert_pdf_to_images(transcript_file)
-                if not images:
-                    logger.error("No pages found in the PDF.")
-                    return {"error": "PDF has no pages."}
-            elif file_ext in ['jpg', 'jpeg', 'png']:
-                logger.info("Processing transcript image file.")
-                images = [Image.open(transcript_file)]
-            else:
-                logger.error(f"Unsupported file format: {file_ext}")
-                return {"error": "Unsupported file format. Please upload a PDF, JPG, or PNG file."}
-
-            return self._extract_data_from_images(images)
-        except Exception as e:
-            logger.error(f"Error extracting transcript data: {e}")
-            return {"error": f"Failed to process transcript: {str(e)}"}
-
-    def _convert_pdf_to_images(self, pdf_file):
-        """Convert PDF to images using pdf2image."""
-        try:
-            logger.info("Converting PDF to images using pdf2image.")
-            return convert_from_bytes(pdf_file.read())
+            images = convert_from_path(file_path, poppler_path=self.poppler_path, dpi=dpi)
+            logger.info(f"Converted PDF to {len(images)} image(s) at {dpi} DPI.")
+            return images
         except Exception as e:
             logger.error(f"Error converting PDF to images: {e}")
-            # Return an empty list if the PDF structure is invalid
-            raise Exception("Invalid PDF structure")  # Raise a custom exception for the test to catch
+            raise
 
-    def _extract_data_from_images(self, images):
-        """Process each image using GPT-4 Vision API to extract academic information."""
-        extracted_data = {
-            "completed_courses": [], 
-            "failed_courses": [],  
-            "GPA": "N/A", 
-            "CGPA": "N/A", 
-            "semesters": {}
-        }
+    def encode_image(self, image):
+        """
+        Encodes a PIL Image to a base64 string.
+        """
+        try:
+            buffer = BytesIO()
+            image.save(buffer, format="JPEG")
+            buffer.seek(0)
+            encoded_image = base64.b64encode(buffer.read()).decode("utf-8")
+            logger.debug("Image successfully encoded to base64.")
+            return f"data:image/jpeg;base64,{encoded_image}"
+        except Exception as e:
+            logger.error(f"Error encoding image to base64: {e}")
+            raise
 
-        for i, image in enumerate(images):
-            temp_image_path = f"temp_image_{i}.png"
-            try:
-                logger.info(f"Processing image {i + 1} with GPT-4 Vision API.")
-                image.save(temp_image_path)
+    def split_image_into_sections(self, image, sections=4):
+        """
+        Splits an image into horizontal sections.
 
-                with open(temp_image_path, "rb") as img_file:
-                    response = openai.Image.create(
-                        file=img_file,
-                        prompt=self._build_vision_prompt()  
-                    )
-                    extracted_data.update(self._parse_gpt4_response(response))
+        Divides the image into 4 equal sections by default.
+        """
+        try:
+            width, height = image.size
+            section_height = height // sections
+            split_images = []
+            for i in range(sections):
+                top = i * section_height
+                bottom = (i + 1) * section_height if i < sections - 1 else height
+                cropped_image = image.crop((0, top, width, bottom))
+                split_images.append(cropped_image)
+            logger.info(f"Split image into {sections} sections.")
+            return split_images
+        except Exception as e:
+            logger.error(f"Error splitting image: {e}")
+            raise
 
-            except Exception as e:
-                logger.error(f"Error processing image {i + 1}: {e}")
-            finally:
-                if os.path.exists(temp_image_path):
-                    os.remove(temp_image_path)  # Ensure cleanup
+    def preprocess_image(self, image, image_index=0):
+        """
+        Preprocesses the image by turning it black and white and increasing contrast.
+        """
+        try:
+            # Convert to black and white (grayscale)
+            bw_image = image.convert("L")  # "L" mode is grayscale in PIL
 
-        return extracted_data
+            # Increase contrast
+            contrast_enhancer = ImageEnhance.Contrast(bw_image)
+            high_contrast_image = contrast_enhancer.enhance(2.0)  # Increase contrast by a factor of 2
 
-    def _build_vision_prompt(self):
-        """Build the prompt to guide GPT-4 Vision on how to extract relevant transcript information."""
+            # Save the processed image
+            output_path = os.path.join(self.output_folder, f"processed_image_{image_index}.jpg")
+            high_contrast_image.save(output_path, quality=100)  # Save with high quality
+            logger.info(f"Processed (black and white with enhanced contrast) image saved at: {output_path}")
+
+            return high_contrast_image, output_path
+        except Exception as e:
+            logger.error(f"Error during image preprocessing: {e}")
+            raise
+
+    def create_transcript_prompt(self):
+        """
+        Creates a refined prompt for the GPT-4 Vision model to extract transcript details.
+        """
         return (
-            "You are analyzing a university transcript. Please extract the following details:\n"
-            "- Semester name and year (e.g., Fall 2021, Spring 2022)\n"
-            "- For each course, extract the course code, course name, credits, and grade\n"
-            "- GPA and CGPA, if present, for each semester\n"
-            "- Include courses with failing grades (F) in the failed courses list.\n"
-            "Return the data in JSON format, organized by semester."
+            "Extract details from these transcript images in JSON format strictly as follows:"
+            "\n- Each semester should be represented as a key (e.g., '2024 Spring')."
+            "\n- For each semester, include a list of courses with these fields:"
+            "\n  - 'Course_code': Combine 'DEPT' and 'CRSE' columns (e.g., 'CSCS203'). Exclude the 'Sec' part entirely."
+            "\n  - 'Course_name': Extract from the 'Title' column."
+            "\n  - 'GR': Extract valid grades only from the 'GR' column."
+            "\n   You will find the grade at the 10th column of each course row:"
+            "\n For example if the data given is like this :"
+            "\n  2024SPCOMP301 C Operating Systems M W 11:00/12:50SBLOCKS218M Chaudhry C+ 3 3 6.9  "
+            " The Grade will be the letter extracted after 'Chaudhry' which in this case is C+"
+            "\n    - Valid passing grades: A, A-, B+, B, B-, C+, C, C-, D+, D."
+            "\n    - Valid incomplete grades: F, W, R, I."
+            "\n    - For repeated courses, include combinations like 'F R', 'W R', 'D R', or 'I R'."
+            "\n    - Do not extract any letters (e.g., J, Q) as grades."
+            "\n  - 'gpa': Extract GPA at the end of the term totals line. Always include this field even if empty."
+            "\n- For ongoing courses/semesters (no final grade): Keep 'GR' and 'gpa' fields empty."
+            "\n- Valid 'DEPT' values: ['CSCS', 'COMP', 'BIOL', 'BIOT', 'BUSN', 'ECON', 'CHEM', 'PHYS', 'ENGL', 'GEOG', "
+            "'HIST', 'MCOM', 'MATH', 'PHIL', 'PLSC', 'PSYC', 'SOCL', 'ISLM', 'URDU', 'LING', 'ENVR', 'EDUC', 'STAT', "
+            "'PHRM', 'CRST', 'PKST']."
+            "\n- Example format:"
+            "\n{"
+            "\n  '2024 Spring': ["
+            "\n    {'Course_code': 'PKST101', 'Course_name': 'Pakistan Studies', 'GR': 'A'},"
+            "\n    {'Course_code': 'SOCL102', 'Course_name': 'Sociology I', 'GR': 'B'},"
+            "\n    {'gpa': '3.5'}"
+            "\n  ],"
+            "\n  '2024 Fall': ["
+            "\n    {'Course_code': 'CSCS203', 'Course_name': 'Differential Equations', 'GR': 'A-'},"
+            "\n    {'Course_code': 'PHYS101', 'Course_name': 'Physics I', 'GR': 'B+'},"
+            "\n    {'gpa': '3.7'}"
+            "\n  ]"
+            "\n}"
         )
 
-    def _parse_gpt4_response(self, response):
-        """Parse the response from GPT-4 Vision API to extract academic information."""
-        logger.info("Parsing GPT-4 Vision API response.")
-        parsed_data = {
-            "completed_courses": [], 
-            "failed_courses": [], 
-            "GPA": "N/A", 
-            "CGPA": "N/A", 
-            "semesters": {}
-        }
+    def image_to_text(self, images):
+        """
+        Uses OpenAI GPT-4 Vision to extract structured data from multiple images.
+        """
+        if self.api_call_in_progress:
+            logger.warning("Attempt to call image_to_text while a call is already in progress.")
+            return {"error": "API call already in progress."}
+        self.api_call_in_progress = True
 
         try:
-            # Accessing the data returned from the response
-            courses = response.get('data', {}).get('courses', [])
-            for course in courses:
-                normalized_course_code = normalize_course_code(course.get('course_code', ''))
-                normalized_course_name = normalize_course_name(course.get('course_name', ''))
-                grade = course.get('grade', 'N/A')
-                credits = course.get('credits', 'N/A')
+            # Encode all images to base64
+            image_data = [
+                {"type": "image_url", "image_url": {"url": self.encode_image(image)}}
+                for image in images
+            ]
 
-                course_data = {
-                    'course_code': normalized_course_code,
-                    'course_name': normalized_course_name,
-                    'credits': credits,
-                    'grade': grade
-                }
+            # Prepare the prompt
+            messages = [
+                {"role": "user", "content": [{"type": "text", "text": self.create_transcript_prompt()}] + image_data}
+            ]
 
-                if grade == "F":
-                    parsed_data['failed_courses'].append(course_data)
-                else:
-                    parsed_data['completed_courses'].append(course_data)
+            logger.info("Sending images to OpenAI GPT-4 Vision API for processing.")
 
-            parsed_data['GPA'] = response.get('data', {}).get('gpa', 'N/A')
-            parsed_data['CGPA'] = response.get('data', {}).get('cgpa', 'N/A')
-            parsed_data['semesters'] = response.get('data', {}).get('semesters', {})
+            response = openai.chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                max_tokens=4000,
+            )
+            extracted_data = response.choices[0].message.content.strip()
+            logger.debug(f"Data extraction successful. Extracted data:\n{extracted_data}")
+            return extracted_data
+        except Exception as e:
+            logger.error(f"Error during OpenAI Vision API processing: {e}")
+            raise
+        finally:
+            self.api_call_in_progress = False
+
+    def extract_transcript_text(self, file_paths):
+        """
+        Extracts transcript data from multiple file paths and processes images accordingly.
+
+        Args:
+            file_paths (list or str): List of file paths or a single file path to process.
+
+        Returns:
+            dict: Parsed transcript data or error message.
+        """
+        try:
+            if not isinstance(file_paths, list):
+                file_paths = [file_paths]
+
+            all_images = []
+            for file_path in file_paths:
+                self.validate_file_type(file_path)
+                images = (
+                    self.convert_pdf_to_images(file_path)
+                    if file_path.lower().endswith(".pdf")
+                    else [Image.open(file_path)]
+                )
+                logger.info(f"Loaded {len(images)} image(s) from file: {file_path}")
+                all_images.extend(images)
+
+            # Preprocess images
+            processed_images = []
+            for index, image in enumerate(all_images):
+                split_images = self.split_image_into_sections(image, sections=3)
+                for section_index, section in enumerate(split_images):
+                    preprocessed_image, _ = self.preprocess_image(section, image_index=f"{index}_{section_index}")
+                    processed_images.append(preprocessed_image)
+
+            # Send all images in one API call
+            raw_data = self.image_to_text(processed_images)
+
+            # Validate and parse JSON-like responses
+            if raw_data.strip().startswith("```json"):
+                raw_data = raw_data.strip("```json").strip("```").strip()
+
+            try:
+                parsed_data = json.loads(raw_data)
+                logger.info("Parsed transcript data successfully.")
+                return parsed_data
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse GPT response into JSON: {e}")
+                logger.debug(f"Raw Data: {raw_data}")
+                return {"error": "Failed to parse GPT response into JSON format."}
 
         except Exception as e:
-            logger.error(f"Error parsing GPT-4 Vision response: {e}")
-
-        return parsed_data
+            logger.error(f"Error extracting transcript text: {e}", exc_info=True)
+            return {"error": "Extraction failed"}

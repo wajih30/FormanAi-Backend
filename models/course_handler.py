@@ -1,70 +1,82 @@
 import logging
 from sqlalchemy import text
 from db import db
-from utils.normalization import normalize_course_code
 from config import MAJOR_TABLE_MAPPING, PREFIX_MAJOR_MAPPING, MAJOR_REQUIREMENTS
 
 # Configure the logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-class CourseHandler:
-    def __init__(self, major_name=None, course_code_prefix=None, sub_category=None):
-        """Initialize the CourseHandler using either the major name or course code prefix."""
-        self.major_name = major_name  # Store the major name
-        self.major_id = self.get_major_id(major_name, course_code_prefix)
-        if self.major_id is None:
-            logger.error(f"No mapping found for major name or course code prefix.")
-            raise ValueError(f"No mapping found for major name or course code prefix.")
 
-        self.sub_category = sub_category
+class CourseHandler:
+    def __init__(self, major_name=None, course_code_prefix=None):
+        """
+        Initialize the CourseHandler using either the major name or course code prefix.
+        Handles both main categories (majors) and sub-categories (sub-majors).
+        """
+        self.major_name = major_name
+        self.major_id, self.sub_category = self.get_major_id_and_sub_category(major_name, course_code_prefix)
+
+        if self.major_id is None:
+            logger.error("No mapping found for the given major name or course code prefix.")
+            raise ValueError("No mapping found for major name or course code prefix.")
+
         self.mapping = self._get_major_table_mapping()
         logger.info(f"Initialized CourseHandler for major ID: {self.major_id} with sub-category: {self.sub_category}")
 
-    def get_major_id(self, major_name=None, course_code_prefix=None):
-        """Retrieve the major ID based on the major name or prefix."""
+    def get_major_id_and_sub_category(self, major_name=None, course_code_prefix=None):
+        """
+        Retrieve the major ID and sub-category based on the major name or prefix.
+        If the major name matches a sub-category, treat it as the main major with the appropriate sub-category.
+        """
         if major_name:
-            # Check for main categories
+            # Check MAJOR_TABLE_MAPPING for main category or sub-category
             for major_id, mapping in MAJOR_TABLE_MAPPING.items():
                 if mapping.get("main_category") == major_name:
-                    return major_id
-                
-                # Check for sub-categories
+                    return major_id, None
                 if "sub_categories" in mapping:
-                    for sub_category, sub_mapping in mapping["sub_categories"].items():
+                    for sub_category in mapping["sub_categories"]:
                         if sub_category == major_name:
-                            return major_id  # Return the main ID for the sub-category
-        
+                            return major_id, sub_category
+
+            # Check MAJOR_REQUIREMENTS for sub-category
+            for major_id, requirements in MAJOR_REQUIREMENTS.items():
+                if "sub_categories" in requirements:
+                    for sub_category in requirements["sub_categories"]:
+                        if sub_category == major_name:
+                            return major_id, sub_category
+
         if course_code_prefix:
-            return PREFIX_MAJOR_MAPPING.get(course_code_prefix)
-        
+            return PREFIX_MAJOR_MAPPING.get(course_code_prefix), None
+
         logger.error(f"No mapping found for major name: {major_name} or course code prefix: {course_code_prefix}")
-        return None
+        return None, None
 
     def _get_major_table_mapping(self):
-        """Retrieve the mapping for the major."""
+        """Retrieve the mapping for the major or sub-category."""
         major_mapping = MAJOR_TABLE_MAPPING.get(self.major_id)
         if not major_mapping:
             logger.error(f"No mapping found for major ID: {self.major_id}")
             raise ValueError(f"No mapping found for major ID: {self.major_id}")
 
-        if self.sub_category and "sub_categories" in major_mapping:
-            sub_mapping = major_mapping["sub_categories"].get(self.sub_category)
+        # Handle sub-category mapping if applicable
+        if self.sub_category:
+            sub_mapping = major_mapping.get("sub_categories", {}).get(self.sub_category)
             if not sub_mapping:
                 logger.error(f"No mapping found for sub-category: {self.sub_category}")
                 raise ValueError(f"No mapping found for sub-category: {self.sub_category}")
             return sub_mapping
-        
+
         return major_mapping
 
-    def query_core_courses(self, sub_category=None):
-        """Query core courses for the major."""
-        core_table = self._get_table("core", sub_category)
+    def query_core_courses(self):
+        """Query core courses for the major or sub-category."""
+        core_table = self.mapping.get("core")
         return self._execute_query(core_table)
 
-    def query_elective_courses(self, sub_category=None):
-        """Query elective courses for the major."""
-        elective_table = self._get_table("elective", sub_category)
+    def query_elective_courses(self):
+        """Query elective courses for the major or sub-category."""
+        elective_table = self.mapping.get("elective")
         return self._execute_query(elective_table)
 
     def query_supporting_courses(self):
@@ -72,7 +84,7 @@ class CourseHandler:
         supporting_table = self.mapping.get("supporting")
         if not supporting_table:
             logger.info(f"No supporting courses found for major ID: {self.major_id}")
-            return []  # Return an empty list if no supporting table exists
+            return []
 
         return self._execute_query(supporting_table)
 
@@ -81,22 +93,16 @@ class CourseHandler:
         prerequisites_table = self.mapping.get("prerequisites")
         if not prerequisites_table:
             logger.info(f"No prerequisite table found for major ID: {self.major_id}")
-            return []  # Return an empty list if no prerequisites exist
+            return []
 
         return self._execute_query(prerequisites_table)
 
-    def _get_table(self, table_type, sub_category=None):
-        """Helper method to get the correct table based on type and optional sub-category."""
-        if sub_category and "sub_categories" in self.mapping:
-            table = self.mapping["sub_categories"].get(sub_category, {}).get(table_type)
-            if not table:
-                logger.error(f"No {table_type} table mapping found for sub-category: {sub_category}")
-                raise ValueError(f"No {table_type} table mapping found for sub-category: {sub_category}")
-            return table
-        return self.mapping.get(table_type)
-
     def _execute_query(self, table_name):
         """Helper method to execute a query on the specified table."""
+        if not table_name:
+            logger.error("No table name provided for query execution.")
+            return []
+
         try:
             logger.info(f"Executing query on table: {table_name}")
             query = text(f"SELECT * FROM {table_name}")
@@ -121,19 +127,21 @@ class CourseHandler:
             logger.error(f"No requirements found for major ID: {self.major_id}")
             raise ValueError(f"No requirements found for major ID: {self.major_id}")
 
-        # Check if the major has subcategories
-        if 'sub_categories' in major_requirements:
-            # Handle Applied Psychology subcategory
-            if self.major_name == "Applied Psychology":
-                applied_psych_requirements = major_requirements['sub_categories'].get("Applied Psychology", {})
-                required_electives = applied_psych_requirements.get("applied_elective_courses_needed", 0)
-                major_requirements['elective_courses_needed'] = required_electives
+        # Handle sub-category requirements if applicable
+        if "sub_categories" in major_requirements and self.sub_category:
+            sub_requirements = major_requirements["sub_categories"].get(self.sub_category, {})
+            major_requirements = {**major_requirements, **sub_requirements}  # Merge sub-category into main
 
-            # Handle Sociology and Culture subcategory
-            elif self.major_name == "Sociology and Culture":
-                sociology_cult_requirements = major_requirements['sub_categories'].get("Sociology and Culture", {})
-                required_electives = sociology_cult_requirements.get("cult_elective_courses_needed", 0)
-                major_requirements['elective_courses_needed'] = required_electives
+        # Include optional keys with default values
+        defaults = {
+            "core_courses_needed": 0,
+            "elective_courses_needed": 0,
+            "supporting_courses_needed": 0,
+            "supporting_prefixes": [],
+        }
+        for key, default in defaults.items():
+            if key not in major_requirements:
+                major_requirements[key] = default
 
         logger.info(f"Retrieved requirements for major ID {self.major_id}: {major_requirements}")
         return major_requirements

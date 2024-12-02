@@ -817,7 +817,7 @@ MAJOR_REQUIREMENTS = {
             "Normal": {
                 "elective_courses_needed": 6,
             },
-            "Sociology and Cult": {
+            "Sociology and Culture": {
                 "cult_elective_courses_needed": 7,
             }
         },
