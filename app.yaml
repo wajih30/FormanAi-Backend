@@ -1,0 +1,25 @@
+runtime: custom
+env: flex
+entrypoint: waitress-serve --listen=*:8080 app:app
+
+env_variables:
+  DB_USER: sqlserver
+  DB_PASSWORD: kyrie123
+  DB_NAME: Unicourses
+  DB_HOST: 162.222.181.232
+  DB_PORT: 1433
+  SECRET_KEY: kyrie123
+  UPLOAD_FOLDER: /tmp/uploads
+  OPENAI_API_KEY: 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
+
+resources:
+  cpu: 1
+  memory_gb: 1
+  disk_size_gb: 10
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 5
+  cool_down_period_sec: 120
+  cpu_utilization:
+    target_utilization: 0.65

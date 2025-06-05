@@ -5,7 +5,13 @@ from models.course_handler import CourseHandler
 from models.general_education_handler import GeneralEducationHandler
 from services.transcript_vision_service import TranscriptVisionService
 
+
+
 logger = logging.getLogger(__name__)
+
+
+
+
 
 class StudentDataHandler:
     def __init__(self, file_paths, major_name=None, transcript_service=None, raw_transcript_data=None):
@@ -21,24 +27,18 @@ class StudentDataHandler:
         self.file_paths = file_paths if isinstance(file_paths, list) else [file_paths]
         self.major_name = major_name
         self.transcript_service = transcript_service if transcript_service else TranscriptVisionService()
-        self.transcript_data = raw_transcript_data  # Use pre-extracted data if provided
-
+        self.transcript_data = raw_transcript_data 
         try:
-            # Initialize handlers
             self.course_handler = CourseHandler(major_name=major_name)
             self.general_education_handler = GeneralEducationHandler(major_name=major_name)
 
-            # Fetch required courses for the degree
             self.required_courses = self.fetch_required_courses()
 
-            # Only extract transcript data if it is not pre-provided
             if not self.transcript_data:
                 logger.info("Extracting transcript data using TranscriptVisionService.")
                 raw_transcript_response = self.transcript_service.extract_transcript_text(self.file_paths)
-                # Parse the raw transcript response
                 self.transcript_data = self.parse_transcript_data(raw_transcript_response)
 
-            # Check if transcript data contains an error
             if not self.transcript_data or 'error' in self.transcript_data:
                 error_message = self.transcript_data.get('error', 'Unknown error')
                 logger.error(f"Transcript data could not be extracted: {error_message}")
@@ -56,7 +56,6 @@ class StudentDataHandler:
             dict: A dictionary of required courses categorized as core, elective, supporting, and general education.
         """
         try:
-            # Fetch data from the database
             core_courses = self.course_handler.query_core_courses()
             elective_courses = self.course_handler.query_elective_courses()
             supporting_courses = self.course_handler.query_supporting_courses()
@@ -64,7 +63,6 @@ class StudentDataHandler:
 
             logger.info("Successfully fetched required courses.")
 
-            # Log the data returned from each query
             logger.debug(f"Core Courses: {core_courses}")
             logger.debug(f"Elective Courses: {elective_courses}")
             logger.debug(f"Supporting Courses: {supporting_courses}")
@@ -73,18 +71,17 @@ class StudentDataHandler:
             def get_course_code_and_name(course_row):
                 logger.debug(f"Course row: {course_row}, Type: {type(course_row)}")
 
-                # Handle different data structures
                 if isinstance(course_row, dict):
                     keys = course_row.keys()
                     course_row_dict = course_row
-                elif hasattr(course_row, '_fields'):  # Named tuple
+                elif hasattr(course_row, '_fields'):  
                     keys = course_row._fields
                     course_row_dict = course_row._asdict()
-                elif hasattr(course_row, '__dict__'):  # ORM object
+                elif hasattr(course_row, '__dict__'): 
                     keys = vars(course_row).keys()
                     course_row_dict = vars(course_row)
                 elif isinstance(course_row, tuple):
-                    # Assume tuple order is (course_code, course_name)
+ 
                     if len(course_row) >= 2:
                         course_code = course_row[0]
                         course_name = course_row[1]
@@ -96,14 +93,12 @@ class StudentDataHandler:
                     logger.error(f"Unsupported course_row type: {type(course_row)}")
                     raise ValueError("Unsupported course_row type")
 
-                # Find course code
                 course_code = None
                 for key in keys:
                     if re.search('code', key, re.IGNORECASE):
                         course_code = course_row_dict[key]
                         break
 
-                # Find course name
                 course_name = None
                 for key in keys:
                     if re.search('name', key, re.IGNORECASE):
@@ -115,7 +110,6 @@ class StudentDataHandler:
 
                 return course_code.replace(' ', ''), course_name
 
-            # Function to format courses
             def format_courses(courses):
                 formatted_courses = []
                 for c in courses:
@@ -127,19 +121,16 @@ class StudentDataHandler:
                         logger.warning(f"Skipping course due to error: {e}")
                 return formatted_courses
 
-            # Format courses
             formatted_core_courses = format_courses(core_courses)
             formatted_elective_courses = format_courses(elective_courses)
             formatted_supporting_courses = format_courses(supporting_courses)
             formatted_general_education_courses = format_courses(general_education_courses)
 
-            # Log formatted courses
             logger.debug(f"Formatted Core Courses: {formatted_core_courses}")
             logger.debug(f"Formatted Elective Courses: {formatted_elective_courses}")
             logger.debug(f"Formatted Supporting Courses: {formatted_supporting_courses}")
             logger.debug(f"Formatted General Education Courses: {formatted_general_education_courses}")
 
-            # Return both formatted and raw courses
             return {
                 "core_courses": formatted_core_courses,
                 "elective_courses": formatted_elective_courses,
@@ -166,14 +157,11 @@ class StudentDataHandler:
         """
         try:
             if isinstance(raw_transcript_response, dict):
-                # Already a dictionary, no need to parse
                 return raw_transcript_response
             else:
-                # Clean up the raw response if necessary
                 raw_transcript_response = raw_transcript_response.strip()
                 if raw_transcript_response.startswith('```json'):
                     raw_transcript_response = raw_transcript_response.strip('```json').strip('```').strip()
-                # Assume it's a string and try to parse it as JSON
                 parsed_data = json.loads(raw_transcript_response)
                 logger.debug(f"Parsed transcript data: {parsed_data}")
                 return parsed_data
@@ -193,17 +181,14 @@ class StudentDataHandler:
             major_requirements = self.course_handler.get_major_requirements()
             formatted_requirements = f"**Major Requirements for {self.major_name}:**\n"
 
-            # Core Courses Needed
             core_courses_needed = major_requirements.get('core_courses_needed', 0)
             if core_courses_needed:
                 formatted_requirements += f"- Core Courses Needed: {core_courses_needed}\n"
 
-            # Elective Courses Needed
             elective_courses_needed = major_requirements.get('elective_courses_needed', 0)
             if elective_courses_needed:
                 formatted_requirements += f"- Elective Courses Needed: {elective_courses_needed}\n"
 
-            # Supporting Courses Needed
             supporting_courses_needed = major_requirements.get('supporting_courses_needed', 0)
             if supporting_courses_needed:
                 formatted_requirements += f"- Supporting Courses Needed: {supporting_courses_needed}\n"
@@ -212,14 +197,12 @@ class StudentDataHandler:
                     prefixes = ', '.join(supporting_prefixes)
                     formatted_requirements += f"  - Supporting Course Prefixes: {prefixes}\n"
 
-            # Specializations or Sub-categories
             specializations = major_requirements.get('specializations', {})
             if specializations:
                 formatted_requirements += "- Specializations:\n"
                 for spec, count in specializations.items():
                     formatted_requirements += f"  - {spec}: {count} courses\n"
 
-            # General Education Requirements
             gen_ed_requirements = major_requirements.get('general_education', {})
             if gen_ed_requirements:
                 formatted_requirements += "\n**General Education Requirements:**\n"
@@ -267,7 +250,6 @@ class StudentDataHandler:
             if not self.transcript_data:
                 raise ValueError("Transcript data is missing or invalid.")
 
-            # Check if there's an error in the transcript data
             if 'error' in self.transcript_data:
                 error_message = self.transcript_data['error']
                 formatted_data = [
@@ -281,58 +263,48 @@ class StudentDataHandler:
 
             for semester, courses in self.transcript_data.items():
                 formatted_data.append(f"#### {semester}:\n")
-                semester_gpa = None  # Initialize semester GPA
-
+                semester_gpa = None
                 for course in courses:
-                    # Log the course data
                     logger.debug(f"Processing course in {semester}: {course} (Type: {type(course)})")
 
-                    # Handle 'Semester_gpa' key if course is a dict
                     if isinstance(course, dict) and "Semester gpa" in course:
                         gpa_value = course["Semester gpa"]
-                        if gpa_value:  # Check if GPA is not an empty string
+                        if gpa_value:  
                             try:
                                 semester_gpa = float(gpa_value)
                             except ValueError:
                                 logger.warning(f"Invalid Semester GPA '{gpa_value}' for {semester}. Skipping GPA.")
-                        continue  # Skip processing this as a course entry
-
-                    # If course is a string, attempt to parse it
+                        continue  
                     if isinstance(course, str):
                         try:
                             course = json.loads(course)
                         except json.JSONDecodeError:
                             logger.error(f"Unable to parse course data: {course}")
-                            continue  # Skip this course
+                            continue
 
                     if not isinstance(course, dict):
                         logger.error(f"Invalid course data type: {type(course)}. Expected dict.")
-                        continue  # Skip this course
-
-                    # Safely handle missing fields with defaults
+                        continue  
                     course_code = course.get('Course_code', '').strip()
                     course_name = course.get('Course_name', '').strip()
                     grade = course.get('GR', '').strip() or course.get('grade', '').strip()
                     gpa = course.get('gpa', '').strip()
 
-                    # Skip entries that have empty course code and course name
                     if not course_code and not course_name:
                         logger.debug(f"Skipping entry with missing course code and name in {semester}.")
                         continue
 
-                    # Format course details
                     course_details = (
                         f"  - **Course Code**: {course_code}\n"
                         f"    **Course Name**: {course_name}\n"
                         f"    **Grade**: {grade}\n"
                     )
 
-                    if gpa:  # Only include GPA if it's present
+                    if gpa:  
                         course_details += f"    **GPA**: {gpa}\n"
 
                     formatted_data.append(course_details)
 
-                # Add semester GPA if available
                 if semester_gpa is not None:
                     formatted_data.append(f"  **Semester GPA**: {semester_gpa:.2f}\n")
 

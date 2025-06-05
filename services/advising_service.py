@@ -4,28 +4,7 @@ from services.openai_services import generate_chatgpt_response
 from models.student_data_handler import StudentDataHandler
 from utils.prompt_builder import PromptHandler
 
-# Set up logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-# Console handler
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.DEBUG)
-
-# File handler
-log_file = 'advising_service.log'
-file_handler = logging.FileHandler(log_file)
-file_handler.setLevel(logging.DEBUG)
-
-# Formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
-file_handler.setFormatter(formatter)
-
-# Add handlers
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
 
 class AdvisingService:
     """Handles advising functionality based on the student's academic progress."""
@@ -52,7 +31,6 @@ class AdvisingService:
             dict: The advising result or error message.
         """
         try:
-            # Step 1: Initialize StudentDataHandler
             logger.info("Initializing StudentDataHandler.")
             student_data_handler = StudentDataHandler(
                 file_paths=self.file_paths,
@@ -60,13 +38,11 @@ class AdvisingService:
             )
             logger.info("Transcript data successfully processed.")
 
-            # Step 2: Generate advising prompt
             logger.info("Generating advising prompt.")
             prompt_handler = PromptHandler(student_data_handler=student_data_handler)
             advising_prompt = prompt_handler.build_advising_prompt()
             logger.debug(f"Generated advising prompt: {advising_prompt}")
 
-            # Step 3: Call OpenAI API for the advising response
             logger.info("Sending advising prompt to OpenAI API.")
             advising_response = generate_chatgpt_response(
                 prompt=advising_prompt,
@@ -75,26 +51,26 @@ class AdvisingService:
             )
             logger.debug(f"Raw GPT response: {advising_response}")
 
-            # Step 4: Parse and validate the GPT response
             if hasattr(advising_response, 'choices') and advising_response.choices:
                 raw_content = advising_response.choices[0].message.content.strip()
                 logger.debug(f"Raw GPT response content: {raw_content}")
 
-                # Step 5: Extract JSON from response
-                parsed_content = self._extract_json(raw_content)
-                if isinstance(parsed_content, dict):
+                
+                cleaned_content = self._clean_raw_content(raw_content)
+                parsed_content = self._try_parse_json(cleaned_content)
+                if parsed_content:
                     logger.info("Advising completed successfully.")
                     return {
                         "status": "success",
                         "advising_notes": parsed_content.get("advising_notes", []),
-                        "raw_response": raw_content
+                        "raw_response": cleaned_content
                     }
                 else:
-                    logger.error("Failed to extract valid JSON from GPT response.")
+                    logger.error("Failed to parse valid JSON from GPT response.")
                     return {
                         "status": "error",
                         "message": "Failed to parse the GPT response into a valid JSON format.",
-                        "raw_response": raw_content
+                        "raw_response": cleaned_content
                     }
 
             logger.error("Invalid GPT response: No valid choices found.")
@@ -108,28 +84,38 @@ class AdvisingService:
             logger.error(f"Unexpected error during advising request: {e}", exc_info=True)
             return {"status": "error", "message": "An unexpected error occurred during the advising process."}
 
-    def _extract_json(self, raw_content):
+    def _clean_raw_content(self, raw_content):
         """
-        Extract JSON from GPT response content.
-
+        Clean the raw GPT response content to remove any extra text or non-JSON content.
+        
         Args:
-            raw_content (str): The raw response content.
-
+            raw_content (str): The raw response content from GPT.
+        
         Returns:
-            dict or None: Extracted JSON data if valid, otherwise None.
+            str: The cleaned content containing only the JSON.
+        """
+        
+        start_idx = raw_content.find("{")
+        end_idx = raw_content.rfind("}") + 1
+        cleaned_content = raw_content[start_idx:end_idx].strip()
+        logger.debug(f"Cleaned content: {cleaned_content}")
+        return cleaned_content
+
+    def _try_parse_json(self, raw_content):
+        """
+        Try to directly parse JSON from the cleaned raw GPT response content.
+        
+        Args:
+            raw_content (str): The raw response content from GPT.
+        
+        Returns:
+            dict or None: Parsed JSON if valid, otherwise None.
         """
         try:
-            # Attempt direct JSON parsing
-            return json.loads(raw_content)
-        except json.JSONDecodeError:
-            logger.warning("Direct JSON parsing failed. Attempting to extract JSON fragment.")
-            # Find JSON fragment within response
-            start_idx = raw_content.find("{")
-            end_idx = raw_content.rfind("}")
-            if start_idx != -1 and end_idx != -1:
-                try:
-                    json_fragment = raw_content[start_idx:end_idx + 1]
-                    return json.loads(json_fragment)
-                except json.JSONDecodeError as inner_error:
-                    logger.error(f"Failed to parse JSON fragment: {inner_error}")
+            
+            parsed_json = json.loads(raw_content)
+            logger.debug(f"Successfully parsed JSON: {parsed_json}")
+            return parsed_json
+        except json.JSONDecodeError as e:
+            logger.error(f"Direct JSON parsing failed: {e}")
             return None

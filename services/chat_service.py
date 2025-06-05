@@ -4,13 +4,14 @@ from services.openai_services import generate_chatgpt_response
 from services.advising_service import AdvisingService
 from services.degree_audit_service import DegreeAuditService
 
-# Set up logger
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.FileHandler('chat_service.log')
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+
+
+
+
+
 
 
 class ChatService:
@@ -48,7 +49,6 @@ class ChatService:
                 result = degree_audit_service.perform_audit()
 
                 if result.get("status") == "success":
-                    # Store audit results in context
                     self.context["degree_audit"] = result["audit_info"]
                     audit_summary = f"Degree audit results for {major_name}: {json.dumps(result['audit_info'], indent=2)}"
                     self._append_to_history("assistant", audit_summary)
@@ -63,7 +63,6 @@ class ChatService:
                 result = advising_service.process_advising_request()
 
                 if result.get("status") == "success":
-                    # Store advising results in context
                     self.context["advising"] = result["advising_notes"]
                     advising_summary = f"Advising results for {major_name}: {json.dumps(result['advising_notes'], indent=2)}"
                     self._append_to_history("assistant", advising_summary)
@@ -94,33 +93,27 @@ class ChatService:
             dict: The GPT response and updated conversation history.
         """
         try:
-            # Append user message to history
             self._append_to_history("user", user_message)
             logger.debug(f"Updated conversation history: {self.conversation_history}")
 
-            # Prepare the system prompt based on the current context
             system_prompt = self._build_system_prompt()
 
-            # Call the OpenAI API
             gpt_response = generate_chatgpt_response(
-                prompt=None,  # No standalone prompt
+                prompt=None,  
                 conversation_history=self.conversation_history,
                 system_prompt=system_prompt,
                 max_tokens=3000,
                 temperature=0.7
             )
 
-            # Handle errors returned by generate_chatgpt_response
             if isinstance(gpt_response, dict) and gpt_response.get("status") == "error":
                 error_message = gpt_response.get("message", "Error connecting to GPT API.")
                 self._append_to_history("assistant", error_message)
                 return {"status": "error", "response": error_message, "history": self.conversation_history}
 
-            # Process successful GPT response
             if gpt_response and hasattr(gpt_response, "choices") and gpt_response.choices:
                 assistant_reply = gpt_response.choices[0].message.content.strip()
 
-                # Append GPT's response to history
                 self._append_to_history("assistant", assistant_reply)
                 return {"status": "success", "response": assistant_reply, "history": self.conversation_history}
 
@@ -157,16 +150,13 @@ class ChatService:
 
         context_items = []
         if "degree_audit" in self.context:
-            # Format degree audit information for clarity
             degree_audit_info = json.dumps(self.context["degree_audit"], indent=2)
             context_items.append(f"Degree Audit Information:\n{degree_audit_info}")
 
         if "advising" in self.context:
-            # Format advising notes for clarity
             advising_notes = json.dumps(self.context["advising"], indent=2)
             context_items.append(f"Advising Notes:\n{advising_notes}")
 
-        # Combine all context items into a single system prompt
         system_prompt = "\n\n".join(context_items)
         logger.debug(f"Constructed system prompt: {system_prompt}")
         return system_prompt if system_prompt else None

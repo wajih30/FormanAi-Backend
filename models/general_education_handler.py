@@ -1,21 +1,17 @@
-import os
+
 import logging
 from dotenv import load_dotenv
 from sqlalchemy import text
 from db import db
 from config import GENERAL_ED_REQUIREMENTS, MAJOR_NAME_MAPPING
 
-# Load environment variables
 load_dotenv()
 
-# Configure logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-log_path = os.path.join(os.path.dirname(__file__), 'general_education_handler.log')
-handler = logging.FileHandler(log_path)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+
+
+
 
 class GeneralEducationHandler:
     """Handles general education requirements for a given major."""

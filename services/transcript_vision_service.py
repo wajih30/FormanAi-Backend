@@ -6,26 +6,21 @@ from pdf2image import convert_from_path
 from PIL import Image, ImageEnhance
 from io import BytesIO
 import json
+import re
 
-# Configure logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
+logging.basicConfig(level=logging.DEBUG)  # Ensure that debug logs are captured
 
 class TranscriptVisionService:
     def __init__(self):
         """
-        Initializes the TranscriptVisionService with OpenAI GPT-4 Vision configuration.
+        Initializes the TranscriptVisionService with OpenAI GPT-4 configuration.
         """
         openai.api_key = os.getenv("OPENAI_API_KEY")
         self.poppler_path = os.getenv("POPPLER_PATH")
-        self.output_folder = "processed_images"  # Folder to save processed images
+        self.output_folder = "/tmp/processed_images"  
         if not os.path.exists(self.output_folder):
-            os.makedirs(self.output_folder)  # Ensure the folder exists
+            os.makedirs(self.output_folder)  
         if not self.poppler_path:
             logger.error("Poppler path is not set in the environment variables.")
             raise EnvironmentError("Poppler path is not set. Ensure it is configured correctly in the .env file.")
@@ -94,21 +89,21 @@ class TranscriptVisionService:
 
     def preprocess_image(self, image, image_index=0):
         """
-        Preprocesses the image by turning it black and white and increasing contrast.
+        Preprocesses the image by improving clarity, turning it black and white, and increasing contrast.
         """
         try:
-            # Convert to black and white (grayscale)
-            bw_image = image.convert("L")  # "L" mode is grayscale in PIL
+            
+            width, height = image.size
+            
+            upscale_factor = 2
+            image = image.resize((width * upscale_factor, height * upscale_factor), Image.LANCZOS)
 
-            # Increase contrast
+            bw_image = image.convert("L")  
             contrast_enhancer = ImageEnhance.Contrast(bw_image)
-            high_contrast_image = contrast_enhancer.enhance(2.0)  # Increase contrast by a factor of 2
-
-            # Save the processed image
+            high_contrast_image = contrast_enhancer.enhance(1.0) 
             output_path = os.path.join(self.output_folder, f"processed_image_{image_index}.jpg")
-            high_contrast_image.save(output_path, quality=100)  # Save with high quality
-            logger.info(f"Processed (black and white with enhanced contrast) image saved at: {output_path}")
-
+            high_contrast_image.save(output_path, quality=100)  
+            logger.info(f"Processed (upscaled, black and white with enhanced contrast) image saved at: {output_path}")
             return high_contrast_image, output_path
         except Exception as e:
             logger.error(f"Error during image preprocessing: {e}")
@@ -119,26 +114,25 @@ class TranscriptVisionService:
         Creates a refined prompt for the GPT-4 Vision model to extract transcript details.
         """
         return (
-            "Extract details from these transcript images in JSON format strictly as follows:"
-            "\n- Each semester should be represented as a key (e.g., '2024 Spring')."
-            "\n- For each semester, include a list of courses with these fields:"
-            "\n  - 'Course_code': Combine 'DEPT' and 'CRSE' columns (e.g., 'CSCS203'). Exclude the 'Sec' part entirely."
-            "\n  - 'Course_name': Extract from the 'Title' column."
-            "\n  - 'GR': Extract valid grades only from the 'GR' column."
-            "\n   You will find the grade at the 10th column of each course row:"
-            "\n For example if the data given is like this :"
-            "\n  2024SPCOMP301 C Operating Systems M W 11:00/12:50SBLOCKS218M Chaudhry C+ 3 3 6.9  "
-            " The Grade will be the letter extracted after 'Chaudhry' which in this case is C+"
-            "\n    - Valid passing grades: A, A-, B+, B, B-, C+, C, C-, D+, D."
-            "\n    - Valid incomplete grades: F, W, R, I."
-            "\n    - For repeated courses, include combinations like 'F R', 'W R', 'D R', or 'I R'."
-            "\n    - Do not extract any letters (e.g., J, Q) as grades."
-            "\n  - 'gpa': Extract GPA at the end of the term totals line. Always include this field even if empty."
-            "\n- For ongoing courses/semesters (no final grade): Keep 'GR' and 'gpa' fields empty."
+            "You are analyzing transcript images and must return data strictly in JSON format as follows:"
+            "\n- The top-level keys in the JSON are the semesters (e.g., '2024 Spring')."
+            "\n- For each semester, provide a list of courses and one GPA entry as shown in the example."
+            "\n- Each course object should include:"
+            "\n   'Course_code': Combine 'DEPT' and 'CRSE' columns (e.g., 'CSCS203'). Ignore and do not include the 'Sec' column at all. The 'Sec' column is the 4th column in the transcript and should never appear in the final data."
+            "\n   'Course_name': Extract from the 'Title' column."
+            "\n   'GR': Extract the grade from the 'GR' column only if it is a valid, finalized grade."
+            "\n      Valid passing grades: A, A-, B+, B, B-, C+, C, C-, D+, D."
+            "\n      Valid incomplete grades: F, W, R, I."
+            "\n      If the course is ongoing or in progress and the GR column is empty or does not contain a final grade, then leave 'GR' empty and do not invent any grade."
+            "\n      For repeated courses, if indicated, combine grades like 'F R', 'W R', 'D R', 'I R' as needed."
+            "\n   Do not extract any letters that are not in the valid grades list. Ignore them if they appear."
+            "\n- After listing all courses for the semester, include one object for 'gpa' extracted from the end of that term’s totals line. If no GPA is present or the semester is ongoing, 'gpa' should be empty."
             "\n- Valid 'DEPT' values: ['CSCS', 'COMP', 'BIOL', 'BIOT', 'BUSN', 'ECON', 'CHEM', 'PHYS', 'ENGL', 'GEOG', "
             "'HIST', 'MCOM', 'MATH', 'PHIL', 'PLSC', 'PSYC', 'SOCL', 'ISLM', 'URDU', 'LING', 'ENVR', 'EDUC', 'STAT', "
-            "'PHRM', 'CRST', 'PKST']."
-            "\n- Example format:"
+            "'PHRM', 'CRST', 'PKST']. Combine 'DEPT' + 'CRSE' to form 'Course_code'."
+            "\n- Each course row: The 10th column contains the GR. Do not confuse columns. The 'Sec' column (4th column) must be completely ignored and never interpreted as a grade."
+            "\n- Example output:"
+            "\n```json"
             "\n{"
             "\n  '2024 Spring': ["
             "\n    {'Course_code': 'PKST101', 'Course_name': 'Pakistan Studies', 'GR': 'A'},"
@@ -151,44 +145,63 @@ class TranscriptVisionService:
             "\n    {'gpa': '3.7'}"
             "\n  ]"
             "\n}"
+            "\n```"
+            "\nFollow these instructions carefully. Do not include any additional commentary outside the JSON."
         )
 
+
     def image_to_text(self, images):
-        """
-        Uses OpenAI GPT-4 Vision to extract structured data from multiple images.
-        """
+        
         if self.api_call_in_progress:
             logger.warning("Attempt to call image_to_text while a call is already in progress.")
             return {"error": "API call already in progress."}
         self.api_call_in_progress = True
 
         try:
-            # Encode all images to base64
-            image_data = [
-                {"type": "image_url", "image_url": {"url": self.encode_image(image)}}
-                for image in images
-            ]
+           
+            encoded_images = [self.encode_image(image) for image in images]
 
-            # Prepare the prompt
             messages = [
-                {"role": "user", "content": [{"type": "text", "text": self.create_transcript_prompt()}] + image_data}
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": self.create_transcript_prompt()  
+                        },
+                        *[
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": encoded_image  
+                                }
+                            }
+                            for encoded_image in encoded_images 
+                        ]
+                    ]
+                }
             ]
 
-            logger.info("Sending images to OpenAI GPT-4 Vision API for processing.")
+            logger.info("Sending transcript images to OpenAI GPT-4 for processing.")
 
             response = openai.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o",  
                 messages=messages,
                 max_tokens=4000,
+                temperature=0  
             )
+
             extracted_data = response.choices[0].message.content.strip()
             logger.debug(f"Data extraction successful. Extracted data:\n{extracted_data}")
+
             return extracted_data
         except Exception as e:
             logger.error(f"Error during OpenAI Vision API processing: {e}")
             raise
         finally:
             self.api_call_in_progress = False
+
+
 
     def extract_transcript_text(self, file_paths):
         """
@@ -215,7 +228,6 @@ class TranscriptVisionService:
                 logger.info(f"Loaded {len(images)} image(s) from file: {file_path}")
                 all_images.extend(images)
 
-            # Preprocess images
             processed_images = []
             for index, image in enumerate(all_images):
                 split_images = self.split_image_into_sections(image, sections=3)
@@ -223,12 +235,25 @@ class TranscriptVisionService:
                     preprocessed_image, _ = self.preprocess_image(section, image_index=f"{index}_{section_index}")
                     processed_images.append(preprocessed_image)
 
-            # Send all images in one API call
             raw_data = self.image_to_text(processed_images)
 
-            # Validate and parse JSON-like responses
+            # Attempt to extract JSON from the response
             if raw_data.strip().startswith("```json"):
-                raw_data = raw_data.strip("```json").strip("```").strip()
+                # Extract JSON within code block
+                json_match = re.search(r'```json\s*(\{.*\})\s*```', raw_data, re.DOTALL)
+                if json_match:
+                    raw_data = json_match.group(1)
+                else:
+                    logger.error("JSON code block not properly formatted.")
+                    return {"error": "Failed to extract JSON from GPT response."}
+            else:
+                
+                json_match = re.search(r'(\{.*\})', raw_data, re.DOTALL)
+                if json_match:
+                    raw_data = json_match.group(1)
+                else:
+                    logger.error("No JSON found in GPT response.")
+                    return {"error": "Failed to extract JSON from GPT response."}
 
             try:
                 parsed_data = json.loads(raw_data)

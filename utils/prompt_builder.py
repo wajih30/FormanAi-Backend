@@ -1,8 +1,11 @@
 import logging
 from models.student_data_handler import StudentDataHandler
 
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
+
+
 
 class PromptHandler:
     def __init__(self, student_data_handler: StudentDataHandler):
@@ -23,12 +26,11 @@ class PromptHandler:
             str: The generated prompt for the degree audit.
         """
         gpt_input = self.student_data_handler.prepare_gpt_input()
-        required_courses = gpt_input['required_courses']  # Now correctly accessing the dictionary
+        required_courses = gpt_input['required_courses']  
         major_requirements = gpt_input['major_requirements']
 
         logger.info("Preparing degree audit prompt with GPT input.")
 
-        # Build the prompt sections for each course category
         core_courses_section = "\n".join([f"       - {course}" for course in required_courses.get('core_courses', [])])
         elective_courses_section = "\n".join([f"       - {course}" for course in required_courses.get('elective_courses', [])])
         supporting_courses_section = "\n".join([f"       - {course}" for course in required_courses.get('supporting_courses', [])])
@@ -47,6 +49,7 @@ You are tasked with performing a detailed degree audit for a student.
    - Ignore courses with grades F, W, I, R, or missing grades.
    - For courses with an 'R' (Repeat) grade, consider only the most recent attempt with a passing grade.
 
+
    **Student Transcript Data:**
 {gpt_input['formatted_transcript_data']}
 
@@ -54,18 +57,34 @@ You are tasked with performing a detailed degree audit for a student.
    - Compare the student's passed courses with the required courses in each category.
    - Identify which requirements have been fulfilled and which courses are still needed for general and elective requirements.
    - Only include courses specified in the required courses lists.
+   - for gen ed for each department if any of the coursse code the student has studied is starting from the course code that is mentioned in the courses list then that requirement would be counted as completed look for completed courses through students grade and the course_code of that course studied and then the course code that is given in the courses list u need to check that.
 
 {major_requirements}
 
    **Degree Requirements:**
 
      - **Core Courses**:
+     Course_code:     course name:
+
+     (which is needed
+     compare the 
+     completed courses) 
 {core_courses_section}
 
      - **Elective Courses**:
+      Course_code:     course name:
+     
+     (which is needed
+     compare the 
+     completed courses) 
 {elective_courses_section}
 
      - **Supporting Courses**:
+      Course_code:     course name:
+     
+     (which is needed
+     compare the 
+     completed courses) 
 {supporting_courses_section}
 
 
@@ -83,8 +102,59 @@ You are tasked with performing a detailed degree audit for a student.
    - Double-check all computations and categorizations.
    - Provide accurate and error-free results.
    donot add extra sentences out side of the output.
+   "Provide the JSON within a code block tagged as JSON.\n"
 
-**Expected Output Format (in JSON)**:
+   these are all the course codes prefixes for each major :
+   # Computer Science and IT
+    "CSCS": 1,  # Computer Science
+    "COMP": 1,  # Computer Science (electives prefix)
+
+    # Life Sciences
+    "BIOL": 2,  # Biology
+    "BIOT": 3,  # Biotechnology
+
+    # Business and Economics
+    "BUSN": 4,  # Business
+    "ECON": 6,  # Economics
+
+    # Chemistry and Physical Sciences
+    "CHEM": 5,  # Chemistry
+    "PHYS": 15,  # Physics
+
+    # Social Sciences and Humanities
+    "ENGL": 8,  # English
+    "GEOG": 10,  # Geography
+    "HIST": 11,  # History
+    "MCOM": 12,  # Mass Communication
+    "MATH": 13,  # Mathematics
+    "PHIL": 14,  # Philosophy
+    "PLSC": 16,  # Political Science
+    "PSYC": 17,  # Psychology
+    "SOCL": 19,  # Sociology
+
+    # Religious Studies and Urdu
+    "ISLM": 18,  # Islamiat (Islamic Studies)
+    "URDU": 21,  # Urdu
+    "LING": 23,  # Linguistics
+
+    # Environmental Sciences
+    "ENVR": 9,  # Environmental Sciences
+
+    # Education
+    "EDUC": 7,  # Education
+
+    # Statistics
+    "STAT": 20,  # Statistics
+
+    # Pharmacy
+    "PHRM": 22,  # Pharmacy
+
+    # Religious Studies (Christian)
+    "CRST": 24  # Religious Studies (Christian)
+
+
+"Here is the required structure:\n"
+"```json\n"
 {{
     "completed_courses": [
         {{"course_code": "COURSE_CODE", "course_name": "COURSE_NAME"}}
@@ -125,12 +195,12 @@ You are tasked with performing a detailed degree audit for a student.
             str: The generated prompt for academic advising.
         """
         gpt_input = self.student_data_handler.prepare_gpt_input()
-        required_courses = gpt_input['required_courses']  # Now correctly accessing the dictionary
+        required_courses = gpt_input['required_courses']  
         major_requirements = gpt_input['major_requirements']
 
         logger.info("Preparing advising prompt with GPT input.")
 
-        # Build the prompt sections for each course category
+       
         core_courses_section = "\n".join([f"       - {course}" for course in required_courses.get('core_courses', [])])
         elective_courses_section = "\n".join([f"       - {course}" for course in required_courses.get('elective_courses', [])])
         supporting_courses_section = "\n".join([f"       - {course}" for course in required_courses.get('supporting_courses', [])])
@@ -177,6 +247,7 @@ You are an academic advisor tasked with providing tailored advice to a student.
    - Consider the student's strengths and weaknesses based on their academic history.
    - Offer advice on course load balancing between challenging and confidence-boosting subjects.
    - Recommend strategies for GPA improvement, such as retaking courses with low grades.
+   -"You need to provide student course recommendations using the courses list and from the needed courses that are left after checking users completed courses and the incompleted courses and suggest courses from the incompleted courses based on their grades and gpa and suggesting them courses according to the dificulty level as the lower difficulty level courses are present in the general education and mainly the core courses are the difficult one.
 
 4. **Career Guidance**:
    - Suggest potential career paths where the student can excel, based on their academic strengths and interests.
@@ -184,17 +255,20 @@ You are an academic advisor tasked with providing tailored advice to a student.
 5. **Finalize the Advising Plan**:
    - Ensure all advice is actionable and aligns with academic regulations.
    - Encourage the student to consult with their academic advisor for personalized guidance.
-   - donot add extra sentences out side of the output.
-
-**Expected Output Format (in JSON)**:
+   - donot add extra sentences out side of the json parantheses.
+   -- " give a detailed and extensive and comprehensive answer and  advice response and be real"
+   "Provide the JSON within a code block tagged as JSON.\n"
+"Here is the required structure:\n"
+"```json\n"
 {{
     "advising_notes": [
-        "Provide clear and concise advising notes here.",
-        "Include recommendations on courses the user can study in the future, strategies,user strengths and weaknesses and potential career paths."
+        "Provide clear and concise advising notes here and only suggest advice on users major courses which include core,elective and supporting donot focuse on weaknesses in general ed department but do recommend them to retake it incase there is a bad grade in any of its department.",
+        "Include recommendations on courses the user can study in the future recommend them from the departments and courses fields that the user has left to study, strategies should be very impressive,user strengths and weaknesses and potential career paths should be well explained."
+        "Tell the user what courses he can take in the future to complete his degree as soon as possible from the courses that are left to be completed
     ]
 }}
 
-Ensure the output is concise, well-structured, and formatted correctly.
+
 """
         logger.info("Advising prompt successfully generated.")
         return prompt.strip()

@@ -3,10 +3,9 @@ from sqlalchemy import text
 from db import db
 from config import MAJOR_TABLE_MAPPING, PREFIX_MAJOR_MAPPING, MAJOR_REQUIREMENTS
 
-# Configure the logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
+
+logger = logging.getLogger(__name__)
 
 class CourseHandler:
     def __init__(self, major_name=None, course_code_prefix=None):
@@ -30,7 +29,6 @@ class CourseHandler:
         If the major name matches a sub-category, treat it as the main major with the appropriate sub-category.
         """
         if major_name:
-            # Check MAJOR_TABLE_MAPPING for main category or sub-category
             for major_id, mapping in MAJOR_TABLE_MAPPING.items():
                 if mapping.get("main_category") == major_name:
                     return major_id, None
@@ -39,7 +37,6 @@ class CourseHandler:
                         if sub_category == major_name:
                             return major_id, sub_category
 
-            # Check MAJOR_REQUIREMENTS for sub-category
             for major_id, requirements in MAJOR_REQUIREMENTS.items():
                 if "sub_categories" in requirements:
                     for sub_category in requirements["sub_categories"]:
@@ -59,7 +56,7 @@ class CourseHandler:
             logger.error(f"No mapping found for major ID: {self.major_id}")
             raise ValueError(f"No mapping found for major ID: {self.major_id}")
 
-        # Handle sub-category mapping if applicable
+        
         if self.sub_category:
             sub_mapping = major_mapping.get("sub_categories", {}).get(self.sub_category)
             if not sub_mapping:
@@ -88,14 +85,7 @@ class CourseHandler:
 
         return self._execute_query(supporting_table)
 
-    def query_prerequisites(self):
-        """Query prerequisites for the major."""
-        prerequisites_table = self.mapping.get("prerequisites")
-        if not prerequisites_table:
-            logger.info(f"No prerequisite table found for major ID: {self.major_id}")
-            return []
-
-        return self._execute_query(prerequisites_table)
+    
 
     def _execute_query(self, table_name):
         """Helper method to execute a query on the specified table."""
@@ -127,12 +117,9 @@ class CourseHandler:
             logger.error(f"No requirements found for major ID: {self.major_id}")
             raise ValueError(f"No requirements found for major ID: {self.major_id}")
 
-        # Handle sub-category requirements if applicable
         if "sub_categories" in major_requirements and self.sub_category:
             sub_requirements = major_requirements["sub_categories"].get(self.sub_category, {})
-            major_requirements = {**major_requirements, **sub_requirements}  # Merge sub-category into main
-
-        # Include optional keys with default values
+            major_requirements = {**major_requirements, **sub_requirements} 
         defaults = {
             "core_courses_needed": 0,
             "elective_courses_needed": 0,

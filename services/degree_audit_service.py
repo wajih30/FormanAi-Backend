@@ -1,31 +1,21 @@
 import logging
 import json
+import re
 from services.openai_services import generate_chatgpt_response
 from models.student_data_handler import StudentDataHandler
 from utils.prompt_builder import PromptHandler
 
-# Set up logger
+
+logging.basicConfig(
+    level=logging.DEBUG,  
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    handlers=[
+        logging.StreamHandler(),  
+        logging.FileHandler("degree_audit_service.log")  
+    ]
+)
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-# Console handler
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.DEBUG)
-
-# File handler
-log_file = 'degree_audit_service.log'
-file_handler = logging.FileHandler(log_file)
-file_handler.setLevel(logging.DEBUG)
-
-# Formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
-file_handler.setFormatter(formatter)
-
-# Add handlers
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
 
 class DegreeAuditService:
     """Handles the degree audit functionality for a student's academic progress."""
@@ -50,7 +40,6 @@ class DegreeAuditService:
             dict: The degree audit result or error message.
         """
         try:
-            # Step 1: Initialize StudentDataHandler
             logger.info("Initializing StudentDataHandler.")
             student_data_handler = StudentDataHandler(
                 file_paths=self.file_paths,
@@ -58,13 +47,11 @@ class DegreeAuditService:
             )
             logger.info("Transcript data successfully processed.")
 
-            # Step 2: Generate degree audit prompt
             logger.info("Generating degree audit prompt.")
             prompt_handler = PromptHandler(student_data_handler=student_data_handler)
             degree_audit_prompt = prompt_handler.build_degree_audit_prompt()
             logger.debug(f"Generated degree audit prompt: {degree_audit_prompt}")
 
-            # Step 3: Call OpenAI API for the audit response
             logger.info("Sending degree audit prompt to OpenAI API.")
             audit_response = generate_chatgpt_response(
                 prompt=degree_audit_prompt,
@@ -73,12 +60,10 @@ class DegreeAuditService:
             )
             logger.debug(f"Raw GPT response: {audit_response}")
 
-            # Step 4: Parse and validate the GPT response
             if audit_response and hasattr(audit_response, "choices") and audit_response.choices:
                 raw_content = audit_response.choices[0].message.content.strip()
                 logger.debug(f"Raw GPT response content: {raw_content}")
 
-                # Step 5: Extract JSON from response
                 parsed_content = self._extract_json(raw_content)
                 if parsed_content:
                     logger.info("Degree audit completed successfully.")
@@ -117,17 +102,26 @@ class DegreeAuditService:
             dict or None: Extracted JSON data if valid, otherwise None.
         """
         try:
-            # Attempt direct JSON parsing
-            return json.loads(raw_content)
-        except json.JSONDecodeError:
-            logger.warning("Direct JSON parsing failed. Attempting to extract JSON fragment.")
-            start_idx = raw_content.find("{")
-            end_idx = raw_content.rfind("}")
-            if start_idx != -1 and end_idx != -1:
-                try:
-                    json_fragment = raw_content[start_idx:end_idx + 1]
-                    logger.debug(f"Extracted JSON fragment: {json_fragment}")
-                    return json.loads(json_fragment)
-                except json.JSONDecodeError as inner_error:
-                    logger.error(f"Failed to parse JSON fragment: {inner_error}")
+            
+            code_block_regex = re.compile(r'```json\s*(\{.*\})\s*```', re.DOTALL)
+            match = code_block_regex.search(raw_content)
+            if match:
+                json_content = match.group(1)
+                logger.debug("Extracted JSON from code block.")
+                return json.loads(json_content)
+            
+            
+            json_start = raw_content.find('{')
+            json_end = raw_content.rfind('}')
+            if json_start != -1 and json_end != -1:
+                json_content = raw_content[json_start:json_end+1]
+                logger.debug("Extracted JSON from raw content.")
+                return json.loads(json_content)
+
+            #
+            logger.error("No JSON content found in the response.")
+            return None
+
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decoding failed: {e}")
             return None
